@@ -1,0 +1,205 @@
+<div class="dataTables_wrapper">
+<div class="row">
+	<div class="col-sm-12 col-md-2">
+		<div class="dataTables_length" id="manage_log_length">
+			<label>Show <select id="manage_log_select" class="custom-select custom-select-sm form-control form-control-sm">
+				{% for i in range_list  %}
+					{% if i ==  logs.paginator.per_page %}
+						<option value="{{i}}" selected="true">{{i}}</option>
+					{% else %}
+						<option value="{{i}}" >{{i}}</option>
+					{% endif %}
+				{% endfor %}
+			</select> entries</label>
+		</div>
+	</div>
+	<div class="col-sm-12 col-md-2">
+		<div class="dataTables_length" id="log_type_filter">
+			<label>Filter By <select id="manage_log_filter_type" class="custom-select custom-select-sm form-control form-control-sm">
+				{% for i in filter_types  %}
+					{% if i ==  selected_filter %}
+						<option value="{{i}}" selected="true">{{i}}</option>
+					{% else %}
+						<option value="{{i}}" >{{i}}</option>
+					{% endif %}
+				{% endfor %}
+			</select> </label>
+		</div>
+	</div>
+	<div class="col-sm-12 col-md-3">
+		<div id="reportrange" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+			<i class="fa fa-calendar"></i>&nbsp;
+			<span>{% if selected_date_range %}{{selected_date_range}}{% endif %}</span> <i class="fa fa-caret-down"></i>
+		</div>
+	</div>
+	<div class="col-sm-12 col-md-3">
+		<div id="manage_log_filter" class="dataTables_filter">
+			<label>Search:<input type="search" id="autoCompInput" class="form-control form-control-sm" placeholder="" aria-controls="manage_log" {% if query != None %}value="{{ query|stringformat:'s' }}"{% endif %}></label>
+		</div>
+	</div>
+	<div class="col-sm-12 col-md-2">
+		<button class="btn" id="export_csv"><i class="fa fa-download"></i> Export Csv</button>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<div class="table-responsive">
+			{% if logs %}
+				{% for log in logs %}
+					<button class="accordion">{% firstof log.user.get_full_name log.user.username %} {{log.status}} {{log.content_type.name}} {{log.object_repr}} at {{ log.revision.date_created|date:"D d M Y" }} {{ log.revision.date_created|time:"H:i" }}</button>
+						<div class="panel">
+						  <p>
+						  	{% for item in log.changes %}
+						  		{{item.field.name}}, {{item.diff|safe}}<br>
+						  	{% endfor %}
+						  </p>
+						</div>
+				{% endfor %}
+			{% else %}
+				<small class="ml-auto pt-3 text-info"><i>Sorry no results found.</i></small>
+			{% endif %}
+
+	</div>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<div class="dataTables_paginate paging_simple_numbers">
+			<ul class="pagination">
+		{% if logs.has_previous %}
+		<li class="paginate_button page-item ">
+			<a class="page-link" href="#" onclick="getPaginate('{{ logs.previous_page_number }}')" >Previous</a></li>
+			{% if logs.number > 3 %}
+				<li class="paginate_button page-item "><a class="page-link" href="#" onclick="getPaginate(1)">1 </a></li>
+				{% if logs.number > 4 %}
+					<li class="paginate_button page-item "><button class="page-link" disabled="">...</button></li>
+				{% endif %}
+			{% endif %}
+		{% endif %}
+
+		{% for num in logs.paginator.page_range %}
+			{% if logs.number == num %}
+				<li class="paginate_button page-item active"><a class="page-link" href="#" onclick="getPaginate('{{ num }}')" >{{ num }}</a></li>
+			{% elif num > logs.number|add:'-3' and num < logs.number|add:'3' %}
+				<li class="paginate_button page-item "><a class="page-link" href="#" onclick="getPaginate('{{ num }}')">{{ num }}</a></li>
+			{% endif %}
+		{% endfor %}
+
+		{% if logs.has_next %}
+			{% if logs.number < logs.paginator.num_pages|add:'-3' %}
+				<li class="paginate_button page-item "><button class="page-link" disabled="">...</button></li>
+				<li class="paginate_button page-item "><a class="page-link" href="#" onclick="getPaginate('{{ logs.paginator.num_pages }}')" >{{ logs.paginator.num_pages }} </a></li>
+			{% elif logs.number < logs.paginator.num_pages|add:'-2' %}
+				<li class="paginate_button page-item "><a class="page-link" href="#" onclick="getPaginate('{{ logs.paginator.num_pages }}')">{{ logs.paginator.num_pages }}</a></li>
+			{% endif %}
+			<li class="paginate_button page-item "><a class="page-link" href="#" onclick="getPaginate('{{ logs.next_page_number }}')" >Next</a></li>
+		{% endif %}
+	</ul>
+		</div>
+	</div>			
+</div>
+</div>
+
+<script type="text/javascript">
+
+
+	$(document).ready(function() {
+
+		var start = moment() //.subtract(29, 'days');
+		var end = moment();
+		function callback(start, end) {
+			selected_date_range = start.format('MMM D, YYYY') + ' - ' + end.format('MMM D, YYYY')
+			$('#reportrange span').html(selected_date_range);
+
+			params['start_date'] = start.format('MMMM D, YYYY')
+			params['end_date'] = end.format('MMMM D, YYYY')
+			params['selected_date_range'] = selected_date_range
+			$.ajax({
+				type: "GET",
+				url: '/manage_logs/?' + $.param(params),
+				success: function(data) {
+					$('#logs_list').html(data);
+				}
+			})
+		}
+
+		$('#reportrange').daterangepicker({
+			startDate: start,
+			endDate: end,
+			ranges: {
+				'Today': [moment(), moment()],
+				'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+				'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+				'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+				'This Month': [moment().startOf('month'), moment().endOf('month')],
+				'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+			}
+		}, callback);
+
+		$("#manage_log_select").change(function(){
+			var value = $("#manage_log_select option:selected").val();
+			params['per_page'] = value
+			$.ajax({
+				type: "GET",
+				url: '/manage_logs/?' + $.param(params),
+				success: function(data) {
+					$('#logs_list').html(data);
+				}
+			})	
+		});
+		
+		$("#manage_log_filter_type").change(function(){
+			var value = $("#manage_log_filter_type option:selected").val();
+			params['filter_type'] = value
+			$.ajax({
+				type: "GET",
+				url: '/manage_logs/?' + $.param(params),
+				success: function(data) {
+					$('#logs_list').html(data);
+				}
+			})	
+		});
+
+		$("#autoCompInput").bind("keypress", {}, keypressInBox);
+		$('#autoCompInput').on('input', function(e) {
+			if('' == this.value) {
+				window.location.href = '/manage_logs/'
+			}
+		});
+			function keypressInBox(e) {
+    			var code = (e.keyCode ? e.keyCode : e.which);
+    			if (code == 13) { //Enter keycode                        
+        			e.preventDefault();
+        			params['query'] = $("#autoCompInput").val()
+        			$.ajax({
+						type: "GET",
+						url: '/manage_logs/?' + $.param(params),
+						success: function(data) {
+							$('#logs_list').html(data);
+						}
+					})
+    			}
+    
+		};
+
+
+		$("#export_csv").click(function () {
+			params['export_csv'] = 'true'
+    		window.location.href = '/manage_logs/?' + $.param(params);
+			delete params.export_csv
+		});
+	});
+	var acc = document.getElementsByClassName("accordion");
+	var i;
+	for (i = 0; i < acc.length; i++) {
+		acc[i].addEventListener("click", function() {
+			this.classList.toggle("active");
+			var panel = this.nextElementSibling;
+			if (panel.style.maxHeight) {
+				panel.style.maxHeight = null;
+			} else {
+				panel.style.maxHeight = panel.scrollHeight + "px";
+			}
+		});
+	}
+</script>

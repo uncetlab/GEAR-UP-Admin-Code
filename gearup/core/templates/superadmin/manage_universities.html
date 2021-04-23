@@ -1,0 +1,419 @@
+
+{% extends 'superadmin/base.html' %} 
+
+{% load static %}
+{% block title %}Manage University{% endblock %}
+
+{% block content %}
+	<div class="container content-wrap">
+		<div class="row pagetitle">
+			<div class="col-md-12">
+				<h1>Manage University</h1>
+				<button class="btn btn-add" data-toggle="modal" data-target="#adduniversity">
+					<i class="fas fa-plus-circle"></i> Add University
+				</button> 
+			</div>
+		</div>
+		<div id="university_list"></div>
+	</div>
+
+	<!-- The Modal -->
+	<div class="modal" id="adduniversity">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<form id="university-form" enctype="multipart/form-data" action="" method="post">
+					<!-- Modal Header -->
+					<div class="modal-header">
+						<h4 class="modal-title">Add University</h4>
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+					</div>
+
+					<!-- Modal body -->
+					<div class="modal-body">
+						<input type="hidden" id="uid" name="uid" />
+						<div class="row">
+							<div class="col-md-5">
+								<label>University Name</label>
+								<input id="name" name="name" type="text" class="form-control" required/>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-md-5">
+								<label>Address</label>
+								<input id="address" name="address" type="text" class="form-control" />
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-md-5">
+								<label>Email</label>
+								<input id="email" name="email" type="email" class="form-control" />
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-md-5">
+								<label>Phone Number</label>
+								<input id="phone_number" name="phone_number" type="text" class="form-control" />
+							</div>
+						</div>
+
+						<div id="logo_prev" class="row"></div>
+
+						<div class="row">
+							<div class="col-md-5">
+								<label>Browse University logo</label>
+								<input id="logo" name="logo" name="logo" type="file" class="form-control-file" />
+								<span class="hint">Recommended image size is 2MB.</span>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-md-12">
+								<label>Status</label><br/>
+								<label class="radio-inline"><input id="university_active" checked="true" type="radio" name="active" value="true" >Active</label>
+								<label class="radio-inline"><input id="university_deactive" type="radio" name="active" value="false">Inactivate</label>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-md-5">
+								<button id="generate_credentials" type="button" onclick="generateSilentLoginCredentials()"  class="btn btn-warning">Generate Silent Login credentials</button>
+							</div>
+						</div>
+						<div id="credentials"></div>
+					</div>
+
+					<!-- Modal footer -->
+					<div class="modal-footer">
+						<button id="submit" type="submit" class="btn btn-primary">Submit</button>
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script type="text/javascript">
+	$(document).ready(function() {
+		getUniversities()
+    	$('[data-tooltip="tooltip"]').tooltip();
+	});
+
+	function getUniversities(){
+		$.ajax({
+			type: 'GET',
+			success: function(data){
+				$('#university_list').html(data);
+			}
+		});
+	};
+
+	function getCredentials(uid){
+		$.ajax({
+			type: 'GET',
+			url: '/manage_credentials/?university=' + uid,
+			success: function(data){
+				data = jQuery.parseJSON(data);
+				$('#credentials').html(data.html);
+				var count = $('#credential_list tr').length;
+				if (count == 3){
+					
+					$('#generate_credentials').prop('disabled', true);
+				}
+			}
+		});
+	};
+
+
+
+	function editUniversity(university) {
+		$('#university_deactive').val('false');
+		$('#university_active').val('true');
+
+		var modal = $('#adduniversity');
+		// change modal content
+		modal.find('#logo_prev').hide()
+		modal.find('#uid').val(university.uid);
+		modal.find('#name').val(university.name);
+		modal.find('#address').val(university.address);
+		modal.find('#email').val(university.email);
+		modal.find('#phone_number').val(university.phone_number);
+		modal.find('.modal-title').text('Edit university')
+		modal.find('#submit').text('Update')
+		if(university.active == 'true'){
+			modal.find('#university_active').prop("checked", true);
+		}else{
+			modal.find('#university_deactive').prop("checked", true);
+		}
+
+		if (university.logo_url){
+			$('#logo').prop('required',false);
+			$( "#logo" ).rules( "remove" );
+			modal.find('#logo_prev').show()
+			html = '<div  class="col-md-12"><label class="mr-3">Current University Logo </label><img height="24" id="university_logo" src="'+university.logo_url+'" alt=""/></div>'
+			modal.find('#logo_prev').html(html);
+		}
+		getCredentials(university.uid);
+		modal.modal('show');
+	}
+
+	function getPaginate(page_number){
+			
+		$.ajax({
+			type: "GET",
+			url: '/manage_university/?page='+page_number+'&per_page='+$("#manage_university_select option:selected").val(),
+			success: function(data) {
+				$('#university_list').html(data);
+			}
+		})	
+	};
+
+	function capitalize(s){
+		if (typeof s !== 'string') return ''
+			return s.charAt(0).toUpperCase() + s.slice(1)
+	}
+
+	function generateSilentLoginCredentials(){
+		$("#university-form").validate()
+		if (!$("#university-form").valid()) return false;
+
+		var formData = new FormData(document.getElementById("university-form"));
+		formData.append('csrfmiddlewaretoken', '{{ csrf_token }}')
+		$.ajax({
+				type: "POST",
+				url: '/manage_credentials/',
+				data: formData,
+				contentType: false,
+				processData: false,
+				success: function(data) {
+					data = jQuery.parseJSON(data)
+					$('#credentials').html(data.html);
+					$('#uid').val(data.uid);
+					var count = $('#credential_list tr').length;
+					if (count == 3){
+						
+						$('#generate_credentials').prop('disabled', true);
+					}
+					return false;
+				}
+			})
+	}
+
+	function copyCredential(credentials){
+		var cred = '{"username": "'+ credentials.username +'", "password": "' + credentials.password +'"}';
+		
+		const el = document.createElement('textarea');
+  		el.value = cred;
+	  	document.body.appendChild(el);
+	  	el.select();
+	  	document.execCommand('copy');
+	  	document.body.removeChild(el);
+
+	  	swal({
+			title: "<h3>Credentials copied</h3>",
+			html: "title",
+			text: "Credentials has been copied to clipboard. Please save it for future use.",
+			type: "warning",
+			confirmButtonText: "Okay",
+			closeOnConfirm: true
+		},
+		function() {
+		});
+	}
+	
+	function deleteCredential(user){
+		swal({
+			title: "<h3>The University mobile application will not work as expected. Are you sure you want to delete this credential?</h3>",
+			html: "title",
+			text: "Delete Confirmation?",
+			type: "warning",
+			showCancelButton: true,
+			confirmButtonColor: "#DD6B55",
+			confirmButtonText: "Delete",
+			closeOnConfirm: false
+		},
+		function() {
+			var uid = $('#uid').val();
+			$.ajax({
+				type: "DELETE",
+				url: '/manage_credentials/?' + $.param({"user_id": user.id, "university": uid}),
+				success: function(data) {
+					
+				}
+			})
+			.done(function(data) {
+				data = jQuery.parseJSON(data)
+				$('#credentials').html(data.html);
+				var count = $('#credential_list tr').length;
+				$('#generate_credentials').prop('disabled', false);
+				if (count == 3){	
+					$('#generate_credentials').prop('disabled', true);
+				}
+				swal.close()
+			})
+		});
+	}
+
+	function showPassword(id){
+		var x = document.getElementById(id);
+  		if (x.type === "password") {
+    		x.type = "text";
+  		} else {
+    		x.type = "password";
+  		}
+	}
+
+	function deleteUniversity(university){
+		if (university.active == 'True'){
+			status = 'deactivate'
+			text = 'Deactivated!'
+		}
+		else{
+			status = 'activate'
+			text = 'Activated!'
+		}
+		swal({
+			title: "<h3>Are you sure you want to " + status +" this university '" + university.name +"'?</h3>",
+			html: "title",
+			text: "Update Confirmation?",
+			type: "warning",
+			showCancelButton: true,
+			confirmButtonColor: "#DD6B55",
+			confirmButtonText: capitalize(status),
+			closeOnConfirm: false
+		},
+		function() {
+			$.ajax({
+				type: "DELETE",
+				url: '/manage_university/?' + $.param({"uid": university.uid}),
+				success: function(data) {}
+			})
+			.done(function(data) {
+				getUniversities();
+				swal(text, "University successfully "+ text, "success");
+			})
+		});
+	}
+
+	$(function(){
+		$.validator.addMethod("checkPhoneNumber", function (value) {
+			var pattern = new RegExp(/\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{4})/);
+			return  pattern.test(value)
+		}, "The field contains non-admitted characters");
+
+		$("#university-form").validate({
+    		rules: {
+        		name: {
+        			required: true,
+                },
+                logo: {
+					required: function(element){
+						var logo_required = true;
+						var img = document.getElementById("university_logo");
+						if (img && img.src.length > 0){
+							logo_required = false
+						}
+						return logo_required;
+					}
+				},
+                email: {
+                	email: true,
+                	required: true,
+                },
+                phone_number: {
+					maxlength:15,
+					checkPhoneNumber: function(element){
+						var phone_required = false;
+						var phone_number = document.getElementById("phone_number");
+						if (phone_number){
+							phone_required = true
+						}
+						return phone_required;
+					},
+				},
+            },
+    		messages: {
+            	name: {
+           			required: "Please enter name.",                  
+                },
+                icon: {
+           			logo: "Please upload a logo.",                  
+                },
+                email: {
+                	required: "Please enter a valid email address.",
+                },
+                phone_number:{
+					checkPhoneNumber:"Please enter a proper phone number"
+				},
+            },
+            errorClass: "text-danger",
+     	});
+
+		$('#university-form').on('submit', function(e){
+			e.preventDefault();
+			$("#university-form").validate()
+			if (!$("#university-form").valid()) return false;
+
+			var formData = new FormData(this);
+			formData.append('csrfmiddlewaretoken', '{{ csrf_token }}')
+			var name = $('#name').val();
+			var uid = $('#uid').val();
+			if (uid){
+				message = name +'" successfully updated.'
+			}else{
+				message = name +'" successfully added.'
+			}
+
+			$.ajax({
+				type: 'POST',
+				data: formData,
+				contentType: false,
+				processData: false,
+				success: function(data){
+					data = jQuery.parseJSON(data)
+					getUniversities();
+					if (data.success == 'true'){
+						$('#adduniversity').modal('toggle');
+						$("#alert_div").removeClass("alert alert-warning");
+						$("#alert_div").addClass("alert alert-success");
+						bootstrap_alert.warning('<strong>Success!</strong> University"' + message)
+
+					}else{
+						$("#alert_div").addClass("alert alert-warning");
+						bootstrap_alert.warning('<strong>Error! </strong>' + data.message)
+					}
+				},
+			});
+		});
+
+	});
+
+	$('#adduniversity').on('hidden.bs.modal', function (e) {
+	  	$(this)
+			.find("input,textarea,select")
+				.val('')
+				.end()
+			.find("input[type=checkbox], input[type=radio]")
+				.prop("checked", "")
+				.end();
+		$(this).find('#logo_prev').html('');
+		$(this).find('.modal-title').text('Add University')
+		$(this).find('#submit').text('Submit')
+		$(this).find('#university_active').prop("checked", true).val('true');
+		$('#credentials').html('');
+		$('#generate_credentials').prop('disabled', false);
+
+		var form = $('#university-form');
+    	form.validate().resetForm();
+    	$(this).find('#logo').prop('required',true);
+    	form.find('.error').removeClass('text-danger');
+    	form.find('.text-danger').removeClass('text-danger');
+	})
+</script>
+
+{% endblock %} 

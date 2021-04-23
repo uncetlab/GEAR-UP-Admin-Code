@@ -1,0 +1,312 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link rel="shortcut icon" href="{% static 'images/favicon.png' %}" type="image/x-icon">
+  <title>GEAR UP North Carolina | Virtual Reality (VR) App</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+
+  <!-- Custom styles for this template -->
+  <link href="{% static 'css/style.css' %}" rel="stylesheet">
+
+</head>
+
+<body id="page-top">
+
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg  fixed-top" id="mainNav">
+    <div class="container navbar-light bg-light">
+      <a class="navbar-brand js-scroll-trigger" href="#page-top"><img src="{% static 'images/GearUpApp-logo.svg' %}" alt="Gear UP App North Carolina Logo" class="adminhomelogo"/></a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link js-scroll-trigger" href="#page-top">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link js-scroll-trigger" href="#aboutgearup">About GEAR UP</a>
+          </li>
+            <li class="nav-item">
+            <a class="nav-link js-scroll-trigger" href="#cardboardheadset">Cardboard Headset</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link js-scroll-trigger" href="#appinstructions">App Instructions</a>
+          </li>
+           <li class="nav-item">
+            <a class="nav-link js-scroll-trigger" href="#youtubeplaylist">YouTube Playlist</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="mailto:production.gearup@gmail.com?subject=Gear UP App Enquiry">Contact</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <header class="bg-primary text-white bannerarea">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-5 text-center">
+                <div class="mobile-area">
+                  <h4>Scan QR Code To Download</h4>
+                    <div class="qrcode">
+                      <img class="mw-100" src="{% static 'images/qrcode.png' %}" alt="Gear Up App download QR code" />
+                    </div>
+                    <h4>Or Visit the App Stores</h4>
+                    <div class="appstoreurl">
+                        <a href="#"><img class="mw-100 mb-2" src="{% static 'images/GearUpApp-iOS-url.png' %}" alt="Gear Up iOS App Store url"/> </a>
+                        <a href="#"><img class="mw-100" src="{% static 'images/GearUpApp-Android-url.png' %}" alt="Gear Up Android Play Store url"/> </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 textpadding">              
+              <h2>Get things done with</h2>
+                <h1 class="text-uppercase">Gear<strong> Up</strong> </h1>
+                <p>GEAR UP NC is a federally funded program from the U.S. Department of Education (P334S120003). The Gaining Early Awareness and Readiness for Undergraduate Programs (GEAR UP) project aims to increase the number of students ...</p>
+                <a href="#aboutgearup" class="btn knowmore js-scroll-trigger">Know more</a>
+                <a href="https://360.gearupapp.org/" target="_blank" class="btn visit-web ml-3">Visit Web App</a>
+            </div>
+        </div>     
+    </div>
+  </header>
+  <section>
+      <div class="container whygearup text-center">
+          <div class="row">
+              <div class="col-md-12">
+                  <h2 class="text-center mb-4"><span class="text-blue">Why use</span> GEAR UP ?</h2>
+                </div>
+            </div>
+            <div class="row">             
+                <div class="col-md-3">
+                    <div class="whygearupbox text-center">
+                      <img src="{% static 'images/trusted-icon.png' %}" alt="trusted" />
+                    </div>
+                    <h4>Trusted</h4>
+                   
+                 </div>
+                 <div class="col-md-3">
+                    <div class="whygearupbox text-center">
+                      <img src="{% static 'images/always-adapted-icon.png' %}" alt="always updated" />
+                    </div>
+                    <h4>Always Updated</h4>
+                  
+                 </div>
+                 <div class="col-md-3">
+                    <div class="whygearupbox text-center">
+                      <img src="{% static 'images/simple-design-icon.png' %}" alt="simple design" />
+                    </div>
+                    <h4>Simple design</h4>
+                   
+                 </div>
+                 <div class="col-md-3">
+                    <div class="whygearupbox text-center">
+                      <img src="{% static 'images/fast-loading-icon.png' %}" alt="fast loading" />
+                    </div>
+                    <h4>Fast Loading</h4>
+                    
+                 </div>
+                  
+               
+            </div>
+        </div>
+    </section>
+  <section id="aboutgearup" class="aboutgearup p-0">
+    <div class="container-fluid ">
+      <div class="row">
+          <div class="col-md-5 pl-0">
+              
+                  <div class="playbtn cursorstyle" id="aboutgearupapp"><img src="{% static 'images/playicon.png' %}" alt="Play" /></div>
+                  <div class="videoaboutgearupapp">
+                      <iframe title="vimeo-player" src="https://player.vimeo.com/video/304087817" width="100%" height="400" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>            
+                  </div>
+                  <img src="{% static 'images/about-us.png' %}" class="mw-100" alt="Gear Up App screenshots"/>
+               
+            </div>
+            <div class="col-md-6 pt-5">
+              <h2 class="mt-5">About <span class="text-yellow">GEAR UP</span></h2>
+                <p>GEAR UP NC is a federally funded program from the U.S. Department of Education (P334S120003). The Gaining Early Awareness and Readiness for Undergraduate Programs (GEAR UP) project aims to increase the number of students who are prepared to enter and succeed in postsecondary education. GEAR UP NC is operated by the University of North Carolina System.</p>
+<p>
+The GEAR UP NC Virtual Reality (VR) app is intended to help first-generation students gain early awareness of college options in North Carolina. It is also intended to motivate students to think of college as an option and to begin to take the necessary steps to apply to college and for financial aid.</p>
+<p>
+The project began as a pilot with the University of North Carolina at Chapel Hill Visitor Center's First Look program and has since expanded to include all 16 University of North Carolina campuses. GEAR UP NC intends to expand the project to include North Carolina Community Colleges and possibly private colleges and universities.</p>
+            </div>
+      </div>
+    </div>
+  </section>
+  <section id="cardboardheadset"  class="bg-light">
+      <div class="container">
+          <div class="row">
+              <div class="col-md-8">
+                  <h2 class="cardbrh2">How to use a Cardboard Headset</h2>
+                    <ul>
+                      <li> To start off, scan the code on the back of the box or download GEAR UP VR from the App Store.</li>
+<li> Proceed to open the app and click "Just Get Started."</li>
+<li> Set aside your phone. Slide the cardboard headset out of the cover and set it aside.</li>
+<li> Pull open the coardboard from the top, and set aside the headphones.</li>
+<li> Open the flaps and fold them over the top and velcro the sides.</li>
+<li> Pull the plastic off the eyepieces.</li>
+<li> On the GEAR UP app, press play on any of the 360 videos and then press pause.</li>
+<li> On the bottom right of the video player, press the icon of the person with the headset to start cardboard mode.</li>
+<li> Place the phone within the flap of the cardboard. Plug in your headphones.</li>
+<li> Press play. Fold the coardboard flap up and velcro at the top and enjoy!</li>
+                    </ul>
+                </div>
+                <div class="col-md-4 text-center">
+                  <div id="cardboard" class="cursorstyle"><img src="{% static 'images/howtouse-cardboard-headset.jpg' %}" alt="How to use cardboard headset YouTube video" class="youtubeimg youtubeplaylist mw-100" /></div>
+                  <div class="videocardboarduse">
+                    <iframe width="100%" height="350" src="https://www.youtube.com/embed/rxJWXhDZjhI" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                  </div>
+                </div>
+            </div>
+        </div>
+  </section>
+  <section id="appinstructions" class="appinstructions">
+    <div class="container">
+      <div class="row mb-5">
+        <div class="col-md-12"><h2 class="text-center">App Instructions</h2></div>
+      </div>
+      <div class="row">
+          <div class="col-md-3 text-center">
+              <img src="{% static 'images/app-instructions-screenshot-home.png' %}" alt="app instructions" class="appinstrimg" />
+            </div>
+            <div class="col-md-8 pt-5">
+              <ul>
+                  <li><strong>Opening screen takes you to the GEAR UP home page, which has:</strong></li>
+<li>Introductory 360-degree video.</li>
+<li>Majors and Degrees: 360-degree video with general information about majors and degrees. Transcript of the video is below and will have any links mentioned in the video.</li>
+<li>#HowtocollegeNC: 360-degree video with general information about colleges in North Carolina. Transcript of the video is below and will have any links mentioned in the video.</li>
+<li>Campus Life: 360-degree video with general information about campus life. Transcript of the video is below and will have any links mentioned in the video.</li>
+<li>Visit NC Colleges: This takes you to the list of all of the universities in the UNC-system.</li>
+                </ul>
+            </div>
+      </div>
+        <div class="row">
+          <div class="col-md-8 text-left pt-5">
+              <ul>
+                  <li>Visit any UNC-system University. Each campus has:</li>
+<li>360-degree video with an overview about the university and student life.</li>
+<li>About: Links to the university's website, application, financial aid information, and degrees and majors information.</li>
+<li>Connect: Social media links for Facebook, Twitter, Instagram and YouTube.</li>
+<li>Contact: Opens up your mail app, so you can email admissions, which will be provided for you when you select contact. </li>
+<li>*Coming soon: The contact features will eventually use Ai, so you can text the university's admissions bot with any questions</li>
+                </ul>
+            </div>
+          <div class="col-md-3 text-center">
+              <img src="{% static 'images/app-instructions-screenshot-details.png' %}" alt="app instructions" class="appinstrimg" />
+            </div>
+          
+      </div>
+    </div>
+  </section>
+  
+    <section id="youtubeplaylist" class="bg-light">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <h2 class="text-center">YouTube Playlist</h2>
+        </div>
+      </div>
+       <div class="row">
+        <div class="col-md-12 text-center">
+          <div id="youtube-playlist" class="cursorstyle"><img src="{% static 'images/youtube-playlist.jpg' %}" class="youtubeimg youtubeplaylist" alt="Youtube Playlist" /></div>
+          <div class="youtubeplaylistvideo">
+              <iframe width="100%" height="350" src="https://www.youtube.com/embed/PPhjuCDa4rw" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="p-4 bg-dark">
+    <div class="container d-flex">
+    <ul class="nav">
+  <li class="nav-item">
+    <a class="nav-link pt-0 pb-0 text-white" href="" data-toggle="modal" data-target="#privacypolicy">Privacy Policy</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link pt-0 pb-0 text-white" href="mailto:production.gearup@gmail.com?subject=GearUP Support Request">Support</a>
+  </li>
+</ul>
+      <ul class="nav text-white ml-auto"><li>Copyright &copy; GEAR UP APP <span id="year"></span></li></ul>
+    </div>
+    <!-- /.container -->
+  </footer>
+
+
+
+<!-- Privacy policy -->
+
+<div class="modal" id="privacypolicy">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h4 class="modal-title">Privacy Policy</strong></h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+
+      <!-- Modal body -->
+      <div class="modal-body">
+      <p>GEAR UP VR was created by The University of North Carolina at Chapel Hill and abides by all University policies including the privacy policy.</p>
+
+<p>The University of North Carolina at Chapel Hill ("the University") is committed to protecting your privacy, and we will not disclose your personal information to third parties unless required to do so by law. By using this website or the app, you agree to abide by this privacy policy as well as any other applicable Information Technology Services policies.</p>
+      </div>
+
+      <!-- Modal footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+  <!-- Bootstrap core JavaScript -->
+  <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+  <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+  <!-- Plugin JavaScript -->
+  <script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+
+  <!-- Custom JavaScript to scroll navigation -->
+  <script src="{% static 'js/scrolling-nav.js' %}"></script>
+  
+  <script>
+ var d = new Date();
+  var n = d.getFullYear();
+  document.getElementById("year").innerHTML = n;
+</script>
+<script type="text/javascript">
+$(document).ready(function(){
+     $("#aboutgearupapp").click(function(){
+     $(".videoaboutgearupapp").toggle();
+      });
+     $("#cardboard").click(function(){
+     $(".videocardboarduse").toggle();
+      });
+     
+      $("#youtube-playlist").click(function(){
+     $(".youtubeplaylistvideo").toggle();
+      });
+});
+      
+</script>
+
+</body>
+
+</html>

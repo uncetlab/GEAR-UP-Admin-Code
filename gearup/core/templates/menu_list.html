@@ -1,0 +1,61 @@
+<div class="row">
+	<div class="col-md-12">
+		<div class="table-responsive">
+			{% if menus %}
+			<table id="manage_menu" class="table table-striped table-bordered manage_menu-list" style="width:100%">
+				<tr>
+					<th>Order</th>
+					<th>Title</th>
+					<th>URL Type</th>
+					<th>Status</th>
+					<th>Edit</th>
+					<th>Delete</th>
+				</tr>
+				{% for menu in menus %}
+					<tr id="{{menu.uid}}">
+						<td>{{menu.order}}</td>
+						<td>{{menu.title}}</td>
+						<td>{{menu.get_url_type_display}}</td>
+						<td class="text-{% if menu.active %}success{% else %}warning{% endif %}">{% if menu.active %}Active{% else %}Inactive{% endif %}</td>
+						<td><a href="#"  onClick="editMenu({{menu.to_json}})" class="text-success" data-tooltip="tooltip"><i class="far fa-edit"></i></a></td>
+						<td><a href="#" onclick="deleteMenu({'uid': '{{menu.uid}}','title': '{{menu.title}}'})" class="text-danger"><i class="far fa-trash-alt"></i></a></td>
+					</tr>
+				{% endfor %}
+			</table>
+			{% else %}
+				<small class="ml-auto pt-3 text-info"><i>Sorry no results found.</i></small>
+			{% endif %}
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+
+	$(document).ready(function() {
+		order = '{{old_order|safe}}'
+		var old_order = jQuery.parseJSON(order)
+		$("#manage_menu").sortable({
+			items: 'tr:not(tr:first-child)',
+			cursor: 'pointer',
+			axis: 'y',
+			dropOnEmpty: false,
+			start: function (e, ui) {
+				ui.item.addClass("selected");
+			},
+			stop: function (e, ui) {
+				var menu_order = {}
+				ui.item.removeClass("selected");
+				$(this).find("tr").each(function (index) {
+					if (index > 0) {
+						$(this).find("td").eq(0).html(index);
+						menu_order[$(this).closest('tr').attr('id')] = index
+					}
+				});
+
+				if (!(isEquivalent(menu_order, old_order))){
+					updateMenuOrder(menu_order)
+				}
+			}
+		});
+	});
+</script>

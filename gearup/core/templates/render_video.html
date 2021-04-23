@@ -1,0 +1,27 @@
+{% load static %}
+<head>
+    <meta charset="utf-8">
+</head>
+<body>
+    <div class="col-md-12">
+        <div class="row">
+            <div id="banner_video" class="col-md-5"><br/>
+                <div>Banner title</div>
+                <input type="text" id="banner-title" class="form-control" placeholder="Video title"  {% if name != None %}value="{{ name|stringformat:'s' }}"{% endif %} required/><br/>
+                <input type="text" style="display: none" value="{{obj_type}}" id="obj_type"/>
+                <input type="text" style="display: none" value="{{obj_id}}" id="obj_id"/>
+                {% if url %}
+                    <video width="640" height="300" id="videojs-vr-player1" class="video-js vjs-default-skin" controls playsinline crossorigin="anonymous">
+                        <source src="{{url}}" crossorigin="anonymous">
+                    </video><br/>
+                    <button type="button" style="padding:4px 10px" onclick="deleteFile('{{uid}}')">Remove video</button>
+                    <input type="file" class="custom-file-replace-input ml-1 upload-file-aws-s3 " accept="video/*" title="Replace Source">
+                    <input type="text" style="display: none" value="{{uid}}" id="replace-video-id"/>
+                {% else %}
+                    <input type="file" class="upload-file-aws-s3 form-control-file" />
+                {% endif %}
+                <div class="col-md-5 item-loading-queue"></div>
+            </div>
+        </div>
+    </div>
+</body>

@@ -1,0 +1,186 @@
+
+{% extends base_template %} 
+
+{% load static %}
+{% block title %}Manage College{% endblock %}
+
+{% block content %}
+	<div class="container content-wrap">
+		<div class="row pagetitle">
+			<div class="col-md-12">
+				<h1>Profile</h1> 
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-6">
+				<div class="row">
+					<div class="col-md-12">
+						<h2 class="subtitle">Profile Details</h2>
+					</div>
+				</div>
+				<form id="profile-form" action="" method="post">
+					{% csrf_token %}
+				<div class="row">
+					<div class="col-md-10">
+						<label>First Name</label>
+						<input id="first_name" name="first_name" value="{{request.user.first_name}}" type="text" class="form-control"/>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-10">
+						<label>Last Name</label>
+						<input id="last_name" name="last_name" value="{{request.user.last_name}}" type="text" class="form-control"/>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-10">
+						<label>Email ID</label>
+						<input type="text" value="{{request.user.email}}" class="form-control" disabled/>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12">
+						<button type="submit" class="btn btn-primary">Submit</button>
+					</div>
+				</div>
+				</form>
+			</div>
+			<div class="col-md-6">
+				<div class="row">
+					<div class="col-md-10">
+						<h2 class="subtitle">Change Password</h2>
+					</div>
+				</div>
+				<form id="password-form" action="" method="post">
+					{% csrf_token %}
+				<div class="row">
+					<div class="col-md-10">
+						<label>Old password</label>
+						<input id="old_password" name="old_password" type="text" class="form-control"  required="true" />
+					</div>
+				</div>
+				<div class="row">	
+					<div class="col-md-10">
+						<p class="newpwdhint">
+							<label>New password <i class="fas fa-info-circle helptext1 text-danger ml-2"></i></label>
+							<input id="new_password" name="new_password" type="text" class="form-control"  required="true" />
+						</p>
+					</div>
+					<div id="errors"></div>
+				</div>
+				<div class="row">
+					<div class="col-md-10">
+						<label>Re-type password</label>
+						<input id="password_repeat" name="password_repeat" type="text" class="form-control"  required="true" />
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12">
+						<button type="submit" class="btn btn-primary">Submit</button>
+					</div>
+				</div>
+			</form>
+			</div>
+		</div>
+	</div>
+	{% endblock %} 
+{% block scripts %}
+{{ block.super }}
+<script src="{% static 'js/jquery.password-validation.js' %}"></script>
+
+<script type="text/javascript">
+	$(function(){
+		$('#profile-form').on('submit', function(e){
+			e.preventDefault();
+
+			$.ajax({
+				type: 'POST',
+				data: $('#profile-form').serialize(),
+				success: function(data){
+					data = jQuery.parseJSON(data)
+					if (data.success == 'true'){
+						$("#alert_div").removeClass("alert alert-warning");
+						$("#alert_div").addClass("alert alert-success");
+						bootstrap_alert.warning('<strong>Success!</strong>' + data.message)
+
+					}else{
+						$("#alert_div").addClass("alert alert-warning");
+						bootstrap_alert.warning('<strong>Error! </strong>' + data.message)
+					}
+				}
+			});
+		});
+
+		$("#new_password").passwordValidation({"confirmField": "#password_repeat"},
+			function(element, valid, match, failedCases) {
+				$("#errors").html("<pre>" + failedCases.join("\n") + "</pre>");
+				if(valid) $(element).css("border","2px solid green");
+				if(!valid) $(element).css("border","2px solid red");
+   				if(valid && match) $("#myConfirmPassword").css("border","2px solid green");
+   				if(!valid || !match) $("#myConfirmPassword").css("border","2px solid red");
+		});
+
+		$("#password-form").validate({
+			rules: {
+				old_password: {
+					required: true,
+				},
+				new_password: {
+					required: true,
+				},
+				password_repeat: {
+					required: true,
+				},
+			},
+			messages: {
+				old_password: {
+					required: "Please enter current password.",                  
+				},
+				new_password: {
+					required: "Please enter a valid password.",                  
+				},
+				url:{
+					required: "Please enter same password."
+				}
+			},
+			errorClass: "text-danger",
+			ignore:'[class*="ql-"]'
+		});
+		$('#password-form').on('submit', function(e){
+
+			e.preventDefault();
+
+			$("#password-form").validate();
+
+			if (!$("#password-form").valid()) return false;
+			$.ajax({
+				type: 'POST',
+				data: $('#password-form').serialize(),
+				success: function(data){
+					data = jQuery.parseJSON(data)
+					if (data.old_password == 'failed'){
+						$("#alert_div").addClass("alert alert-warning");
+						bootstrap_alert.warning('<strong>Error! </strong>' + data.message)
+					}
+
+					if (data.success == 'true'){
+						$("#alert_div").removeClass("alert alert-warning");
+						$("#alert_div").addClass("alert alert-success");
+						bootstrap_alert.warning('<strong>Success!</strong>' + data.message)
+						setTimeout(function(){ stateChange() }, 2000);
+
+					}else{
+						$("#alert_div").addClass("alert alert-warning");
+						bootstrap_alert.warning('<strong>Error! </strong>' + data.message)
+					}
+				}
+			});
+		});
+	});
+</script>
+ <script>
+$(document).ready(function(){
+  $('.helptext1').tooltip({title: "<ul><li>Your password cant be too similar to your other personal information.</li><li>Your password must contain at least 12 characters.</li><li>Your password cant be a commonly used password.</li><li>Your password cant be entirely numeric.</li></ul>", html: true, placement: "right"}); 
+});
+</script>
+{% endblock %} 

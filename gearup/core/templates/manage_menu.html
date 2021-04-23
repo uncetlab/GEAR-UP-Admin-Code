@@ -1,0 +1,365 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Manage Menu{% endblock %}
+{% block content %}
+
+	<div class="container content-wrap">
+		<div class="row pagetitle">
+			<div class="col-md-12">
+				<h1>Manage Menu </h1> <button class="btn btn-add" data-toggle="modal" data-target="#addmenu"><i class="fas fa-plus-circle"></i> Add Menu Item</button> 
+				<small class="ml-auto pt-2 text-info"><i>Drag to change menu order</i></small>
+			</div>
+		</div>
+		{# Menu list #}
+		<div id="menu_list"></div>
+	</div>
+	
+	<!-- The Modal -->
+	<div class="modal" id="addmenu">
+	  <div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<form id="menu-form" enctype="multipart/form-data" action="" method="post">
+				{% csrf_token %}
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<h4 class="modal-title">Add Menu Item</h4>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+
+				<!-- Modal body -->
+				<div class="modal-body">
+					<input type="hidden" id="uid" name="uid">
+
+					<div class="row">
+						<div class="col-md-5">
+							<label>Menu Title</label>
+							<input id="menu_title" placeholder="Required Field" name="title" type="text" class="form-control" />
+						</div>					
+					</div>
+					<div id="menu_icon_prev" class="row">				
+					</div>
+					<div class="row">
+						<div class="col-md-5">
+							<label>Menu Icon</label><span class="hint">Recommended icon width : 24px, height : 24px, color : #acadb8</span>
+							<input id="menu_icon" name="icon" type="file" class="form-control-file" />
+						</div>					
+					</div>
+					<div class="row">
+						<div class="col-md-5">
+							<label>Url Type</label>
+							<select id="menu_select_url_type" name="url_type" class="form-control">
+								<option value="pre_defined">Pre Defined Pages</option>
+								<option value="native">Custom Pages</option>
+								<option value="external">External</option>
+							</select>
+						</div>					
+					</div>
+					<div class="row">
+						<div class="col-md-12" class="row mb-0">
+							<label for="menu_pre_defined_pages">Select Pre Defined Pages</label>
+							<select id="menu_pre_defined_pages" name="key_name"  class="form-control col-md-5" >
+								<option value="">- Select -</option>
+								<option value="NC_COLLEGES">Visit Colleges</option>
+								<option value="CAREERS">Visit Careers</option>
+								<option value="HOME">Home</option>
+								<option value="DISABILITY_ACCESS">Disability Access</option>		
+							</select>
+						
+							<label for="menu_select_page">Select Custom Page</label>
+							<select id="menu_select_page" name="page"  class="form-control col-md-5">
+								<option value="">- Select -</option>
+								{% for page in pages %}
+									<option value="{{page.uid}}">{{page.title}}</option>
+								{% endfor %}
+							</select>
+						
+							<label for="menu_url">External Url</label><br>
+							<span id="menu_url_span" class="hint text-lightgray"><i class="fas fa-exclamation-triangle"></i> For better user experience mobile friendly websites are recommended</span>
+							<div class="col-md-5 m-0 pl-0"><input id="menu_url" name="url" type="text" class="form-control"/></div>
+						</div>					
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<label>Menu Status</label><br/>
+							<label class="radio-inline"><input id="menu_active" checked="true" type="radio" name="active" value="true" >Active</label>
+							<label class="radio-inline"><input id="menu_deactive" type="radio" name="active" value="false">Inactivate</label>
+						</div>
+					</div>
+				</div>
+
+				<!-- Modal footer -->
+				<div class="modal-footer">
+					<button id="submit" type="submit" class="btn btn-primary">Submit</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</form>
+		</div>
+	  </div>
+	</div>
+	
+{% endblock %} 
+{% block scripts %}
+{{ block.super }}
+<script>
+	$(document).ready(function() {
+		getMenu();
+
+		$('label[for=menu_url], input#menu_url').hide();
+		$('label[for=menu_select_page], select#menu_select_page').hide();
+		$('#menu_url_span').hide();
+
+		$("#menu_select_url_type").change(function(){
+			var value = $("#menu_select_url_type option:selected").val();
+			if (value == 'native'){
+				$('#menu_url_span').hide();
+				$('label[for=menu_url], input#menu_url').hide().prop('required',false);
+				$('label[for=menu_pre_defined_pages], select#menu_pre_defined_pages').hide().prop('required',false);
+				$('label[for=menu_select_page], select#menu_select_page').show().prop('required',true);
+				$('#menu_select_page').show();
+			}
+			else if(value == 'pre_defined'){
+				$('#menu_url_span').hide();
+				$('label[for=menu_url], input#menu_url').hide().prop('required',false);
+				$('label[for=menu_select_page], select#menu_select_page').hide().prop('required',false);
+				$('label[for=menu_pre_defined_pages], select#menu_pre_defined_pages').show().prop('required',true);
+				$('#menu_pre_defined_pages').show();
+
+			}
+			else{
+				$('#menu_url_span').show();
+				$('label[for=menu_select_page], select#menu_select_page').hide().prop('required',false);
+				$('label[for=menu_pre_defined_pages], select#menu_pre_defined_pages').hide().prop('required',false);
+				$('label[for=menu_url], input#menu_url').show().prop('required',true);
+				$('#menu_url').show();
+			}
+		});
+	});
+
+	var _URL = window.URL || window.webkitURL;
+	$("#menu_icon").change(function (e) {
+		var file, img;
+		var maxwidth = 24;
+		var maxheight = 24;
+		
+		if ((file = this.files[0])) {
+			img = new Image();
+			img.onload = function () {
+				if(this.width != maxwidth && this.height != maxheight){
+					alert('Selected file not in a proper resolution. Please select a proper image')
+					$("#menu_icon").val('')
+
+				}
+			};
+			img.src = _URL.createObjectURL(file);
+		}
+		
+	});
+
+	function editMenu(menu) {
+		$('#menu_deactive').val('false');
+		$('#menu_active').val('true');
+		var modal = $('#addmenu');
+		modal.find('#menu_icon_prev').hide()
+		modal.find('#uid').val(menu.uid);
+		modal.find('#menu_title').val(menu.title);
+		modal.find('.modal-title').text('Edit Menu Item')
+		modal.find('#submit').text('Update')
+		if (menu.url_type == 'native'){
+			modal.find('label[for=menu_url], input#menu_url').hide().prop('required',false);
+			modal.find('label[for=menu_pre_defined_pages], select#menu_pre_defined_pages').hide().prop('required',false);
+			modal.find('label[for=menu_select_page], select#menu_select_page').show().prop('required',true);
+			modal.find('#menu_select_page').show();
+			modal.find('#menu_url_span').hide();
+		}
+		else if(menu.url_type == 'pre_defined'){
+			modal.find('label[for=menu_url], input#menu_url').hide().prop('required',false);
+			modal.find('label[for=menu_select_page], select#menu_select_page').hide().prop('required',false);
+			modal.find('label[for=menu_pre_defined_pages], select#menu_pre_defined_pages').show().prop('required',true);
+			modal.find('#menu_url_span').hide();
+		}
+		else{
+			modal.find('label[for=menu_select_page], select#menu_select_page').hide().prop('required',false);
+			modal.find('label[for=menu_pre_defined_pages], select#menu_pre_defined_pages').hide().prop('required',false);
+			modal.find('label[for=menu_url], input#menu_url').show().prop('required',true);
+			modal.find('#menu_url_span').show();
+		}
+		modal.find('#menu_select_url_type').val(menu.url_type).attr('selected','selected');
+		if(menu.page){
+			modal.find('#menu_select_page').val(menu.page).attr('selected','selected');
+		}
+		if(menu.pre_defined_key){
+			modal.find('#menu_pre_defined_pages').val(menu.pre_defined_key).attr('selected','selected');
+		}
+		if(menu.state == 'true'){
+			modal.find('#menu_active').prop("checked", true);
+		}else{
+			modal.find('#menu_deactive').prop("checked", true);
+		}
+		modal.find('#menu_url').val(menu.url);
+
+		if (menu.icon_url){
+			$('#menu_icon').prop('required',false);
+			$( "#menu_icon" ).rules( "remove" );
+			modal.find('#menu_icon_prev').show()
+			html = '<div  class="col-md-12"><label class="mr-3">Current Menu Icon </label><img height="24" src="'+menu.icon_url+'" alt=""/></div>'
+			modal.find('#menu_icon_prev').html(html);
+		}
+
+		modal.modal('show');
+	}
+
+	function getMenu(){
+		$.ajax({
+			type: 'GET',
+			success: function(data){
+				$('#menu_list').html(data);
+			}
+		});
+	};
+
+	function updateMenuOrder(order){
+		$.ajax({
+				type: 'POST',
+				data: {'csrfmiddlewaretoken':  '{{ csrf_token }}',
+					   'type': 'order_update', 'values': JSON.stringify(order)},
+				success: function(data){
+					getMenu();
+					$("#alert_div").addClass("alert alert-success");
+					bootstrap_alert.warning('<strong>Success!</strong> Menu order updated.')
+				}
+			});
+	};
+
+	function deleteMenu(menu){
+		swal({
+			title: "<h3>Are you sure you want to delete this menu item '" + menu.title +"'?</h3>",
+			html: "title",
+			text: "Delete Confirmation?",
+			type: "warning",
+			showCancelButton: true,
+			confirmButtonColor: "#DD6B55",
+			confirmButtonText: "Delete",
+			closeOnConfirm: false
+		},
+		function() {
+			$.ajax({
+				type: "DELETE",
+				url: '/manage_menu/?' + $.param({"uid": menu.uid}),
+				success: function(data) {}
+			})
+			.done(function(data) {
+				getMenu();
+				swal("Deleted!", "Menu Item successfully Deleted!", "success");
+			})
+		});
+	}
+
+	$(function(){
+
+
+		$("#menu-form").validate({
+    		rules: {
+        		title: {
+        			required: true,
+                },
+                key_name: {
+                	required: true,
+                },
+                icon: {
+                	required: true,
+                },
+                url: {
+                	url: true,
+                }
+            },
+    		messages: {
+            	title: {
+           			required: "Please enter menu title.",                  
+                },
+                icon: {
+           			required: "Please upload a valid menu icon.",                  
+                },
+                key_name: {
+                	required: "Please select a valid page from choices.",
+                },
+                page: {
+           			required: "Please select a valid page from choices.",                  
+                },
+                url:{
+                	required: "Please provide a valid external url, with prefix 'http://'."
+                }
+            },
+            errorClass: "text-danger",
+     	});
+
+		$('#menu-form').on('submit', function(e){
+
+
+			e.preventDefault();
+
+			$("#menu-form").validate()
+
+
+			if (!$("#menu-form").valid()) return false;
+
+			var formData = new FormData(this);
+			formData.append('csrfmiddlewaretoken', '{{ csrf_token }}')
+			formData.append('type', 'menu_update')
+			var menu_title = $('#menu_title').val();
+			var uid = $('#uid').val();
+			if (uid){
+				message = menu_title +'" successfully updated.'
+			}else{
+				message = menu_title +'" successfully added.'
+			}
+
+			$.ajax({
+				type: 'POST',
+				data: formData,
+				contentType: false,
+				processData: false,
+				success: function(data){
+					getMenu();
+					$('#addmenu').modal('toggle');
+					$("#alert_div").addClass("alert alert-success");
+					bootstrap_alert.warning('<strong>Success!</strong> Menu"' + message)
+				},
+
+			});
+				
+		
+		});
+
+		
+	});
+
+	$('#addmenu').on('hidden.bs.modal', function (e) {
+	  $(this)
+		.find("input,textarea, radio")
+			.val('')
+			.end()
+		.find("input[type=checkbox], input[type=radio]")
+			.prop("checked", "")
+			.end();
+	$(this).find('#menu_icon_prev').html('');
+	$(this).find('#menu_active').prop("checked", true).val('true');
+	$(this).find('.modal-title').text('Add Menu Item')
+	$(this).find('#submit').text('Submit')
+	$(this).find('#menu_icon').prop('required',true);
+	$(this).find('#menu_select_url_type').val('pre_defined').attr('selected','selected');
+	$(this).find('label[for=menu_pre_defined_pages], select#menu_pre_defined_pages').show().prop('required',true);
+	$(this).find('label[for=menu_url], input#menu_url').hide().prop('required',false);
+	$(this).find('label[for=menu_select_page], select#menu_select_page').hide().prop('required',false);
+	$(this).find('#menu_select_page').val('');
+	$(this).find('#menu_pre_defined_pages').val('');
+	$(this).find('#menu_url_span').hide();
+
+	// debugger;
+	var form = $('#menu-form');
+    form.validate().resetForm();
+    form.find('.error').removeClass('text-danger');
+    form.find('.text-danger').removeClass('text-danger');
+	})
+</script>
+
+{% endblock %} 

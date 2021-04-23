@@ -1,0 +1,15 @@
+{% autoescape off %}
+Dear {% firstof user.get_full_name user.username %},
+
+You have been added as an admin to manage these universities {{user.admin.formatted_universities}}.
+
+Please use the below link to accept invitation.
+
+{{ protocol }}://{{ domain }}{% url 'password_reset_confirm' uidb64=uid token=token %}
+
+If clicking the link above doesn't work, please copy and paste the URL in a new browser
+window instead.
+
+Sincerely,
+Team Gearup
+{% endautoescape %}

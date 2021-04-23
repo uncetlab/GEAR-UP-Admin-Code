@@ -1,0 +1,621 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Manage Home Page{% endblock %}
+
+{% block content %}
+<div class="container content-wrap">
+	<div class="row pagetitle">
+		<div class="col-md-12">
+			<h1>Manage Home Page </h1>
+		</div>
+	</div>
+	<label>Banner Video</label><span class="hint">Recommended video ratio 16:9</span>
+	<div id="banner_video" class="row addtile-area">
+		{% include "render_video.html" with url=video_url name=video_name uid=video_id obj_type="custom_page" obj_id=home_page.uid %}
+		<div class="col-md-6">
+			<div class="custom-file mb-3">
+				<input type="file" class="custom-file-input" id="thumbnail_image" name="thumbnail_image">
+				<span class="hint">Recommended image size is 2MB.</span>
+				<label class="custom-file-label" for="thumbnail_image">Set Thumbnail for Banner Video</label>
+			</div><br>
+            {% if  home_page.video and home_page.video.thumbnail %}
+            	<label class="form-control-file" for="thumbnail_image_url">Current Thumbnail</label><img id="thumbnail_image_url" height="98" width="174" src="{{home_page.video.thumbnail.url}}" alt=""/>
+            {% endif %}
+		</div>
+	</div>
+	{# Tiles list #}
+	<div id="tile_list" class="row addtile-area"></div>
+	<div class="row">
+		<button type="submit" id="home-page-submit" class="btn btn-primary">Submit</button>
+		<button type="submit" data-toggle="modal" id="home-page-preview"  class="btn btn-preview ml-1 mr-1">Preview</button>
+		<a href="/" class="btn btn-default">Back</a>
+	</div>
+</div>
+
+
+<!-- Add tile Modal -->
+<div class="modal" id="addtile">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<form id="tile-form" enctype="multipart/form-data"  method="post">
+				{% csrf_token %}
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<h4 class="modal-title">Add Tile</h4>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+
+				<!-- Modal body -->
+				<div class="modal-body">
+					<input type="hidden" id="uid" name="uid">
+					<div id="tile_icon_prev" class="row">				
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<label>Image</label><span class="hint">Recommended image resolution 375X211</span>
+							<input type="file" name="image" id="file" class="form-control-file" />
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-5">
+							<label>Title</label>
+							<input id="tile_title" type="text" placeholder="Required Field" name="title" class="form-control" />
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-5">
+							<label>Description</label>
+							<input id="tile_description" type="text" name="description" class="form-control" />
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-5">
+							<label>Url Type</label>
+							<select id="tile_select_url_type" name="url_type" class="form-control">
+								<option value="native">Custom Pages</option>
+								<option value="external">External</option>
+							</select>
+						</div>					
+					</div>
+					<div class="row">
+						<div class="col-md-12" class="row mb-0">
+							<label for="tile_select_page">Select Custom Page</label>
+							<select id="tile_select_page" name="page" required  class="form-control col-md-5">
+								<option  value="">- Select -</option>
+								{% for page in pages %}
+									<option value="{{page.uid}}">{{page.title}}</option>
+								{% endfor %}
+							</select>
+							<label for="tile_url" style="">External Url </label><br><span id="tile_url_span"  class="hint text-lightgray"><i class="fas fa-exclamation-triangle"></i> For better user experience mobile friendly websites are recommended</span>
+							<div class="col-md-5 m-0 pl-0"><input id="tile_url" name="url" type="text" class="form-control" style="" required=""></div>
+							<input type="text" name="image_url" style="display: none" id="image_url">
+						</div>
+					</div>
+						
+					<div class="row">
+						<div class="col-md-12">
+							<label>Tile Status</label><br/>
+							<label class="radio-inline"><input id="tile_active" checked="true" type="radio" name="active" value="true" >Active</label>
+							<label class="radio-inline"><input id="tile_deactive" type="radio" name="active" value="false">Inactivate</label>
+						</div>
+					</div>
+				</div>
+
+				<!-- Modal footer -->
+				<div class="modal-footer">
+					<button id="submit" type="submit" class="btn btn-primary">Submit</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<!-- Home page preview Modal -->
+<div class="modal" id="homepage-preview">
+	<div class="modal-dialog modal-xl">
+		<div class="modal-content">
+
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<h4 class="modal-title">Home Page Preview</h4>
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+		  	</div>
+
+		  	<!-- Modal body -->
+			<div class="modal-body">
+				<button class="reveal btn btn-outline-secondary">Web View </button>
+				<!-- Web preview -->
+
+				<div class="web-view">
+					<div class="wrapper">
+						<div class="container-fluid ">
+							<nav class="navbar navbar-expand-lg pt-2 pb-0 pl-0 mb-2 container advmenu"> <a class="navbar-brand p-0" href="#"><img class="logo-img-height" src="{% if request.session.university_logo %}{{request.session.university_logo}}{% else %}{% static 'images/college-tile-default-img.jpg' %}{% endif %}" alt="Get2College logo" /></a>
+								<ul class="mr-auto links">
+									<li class="nav-item active"> <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a> </li>
+									<li class="nav-item"> <a class="nav-link" href="#">MS College</a> </li>
+									<li class="nav-item"> <a class="nav-link" href="#">Disability Access </a> </li> 
+								</ul>
+								<button><i class="fas fa-ellipsis-h"></i></button>
+								<ul class="hidden-links hidden"></ul>
+							</nav>
+						</div>
+						<div class="container position-relative index1">
+							<div class="row">
+								<div class="col-md-9 p-0 position-relative" id="college_web_preview_video">
+									<video height="500" id="videojs-vr-player1" class="video-js vjs-default-skin videowdhm" controls playsinline crossorigin="anonymous">
+										<source src="#" crossorigin="anonymous">
+									</video>
+									<div class="video-static-content">
+										<img src="{% static 'images/video-play-btn.png' %}" alt="Play Video" class="video-play-btn" />
+										<img id="web_video_thumbnail" src="{% static 'images/video-thumb.jpg' %}" alt="Video"  class="video-thumb"/>
+									</div>
+									<br/>
+								</div>
+								<div class="col-md-3 pr-0">
+									<div class="tileverticalscroll" id="web_preview_tile">
+										<a href="" class="hometilearea">
+											<div class="tile-img">
+												<img src="{% static 'images/home-tile-img.jpg' %}" class="mw-100" />
+												<div class="tile-title p-1">Majors & Degrees
+												</div>
+											</div>
+										</a>
+										<div class="hometilearea">
+											<div class="tile-img">
+												<img src="{% static 'images/home-tile-img.jpg' %}" class="mw-100" />
+												<div class="tile-title p-1">
+													Majors & Degrees
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="bg-1"><img src="{% static 'images/bg-1.png' %}"/></div>
+							<div class="bg-2"><img src="{% static 'images/bg-1.png' %}"/></div>
+							<div class="bg-3"><img src="{% static 'images/bg-2.png' %}"/></div>
+						</div>
+						<div class="push"></div>
+					</div>
+
+					<footer class="sticky-footer" class="py-4 bg-dark text-white-50">
+						<div class="container text-center"> <small>Copyright &copy; Get2College</small> </div>
+					</footer>
+				</div>
+				<!-- Mobile preview -->
+				<div class="preview-bg  mob-app-view">
+					<div class="preview-wrap">
+						<div class="preview-topbar">
+							<h1>Home</h1>
+						</div>
+						<div class="preview-content-wrap">
+							<div class="preview-content">							
+								<div class="preview-video" id="preview_video">
+									<div class="preview-video-title">
+									360 : Gear Up NC VR Introduction
+									</div>
+									<img src="{% static 'images/video-img.jpg' %}" alt=""/>
+									<div class="preview-video-playbtn"><a href="#"><img src="{% static 'images/ic_play_btn.png' %}" alt=""/></a></div>
+								</div>
+								<div class="preview-home-tile-wrap" id="preview_tiles">
+									<div class="preview-home-tile">
+										<div class="preview-home-tile-img">
+											<img src="{% static 'images/home-tile.png' %}"/>
+										</div>
+										<div class="preview-home-text">
+											<h2>Majors & Degrees</h2>
+											<p>Lorem Ipsum is simply dummy text of the printing  </p>
+										</div>
+									</div>
+									<div class="preview-home-tile">
+										<div class="preview-home-tile-img">
+											<img src="{% static 'images/home-tile.png' %}"/>
+										</div>
+										<div class="preview-home-text">
+											<h2>Majors & Degrees</h2>
+											<p>Lorem Ipsum is simply dummy text of the printing  </p>
+										</div>
+									</div>
+									<div class="preview-home-tile">
+										<div class="preview-home-tile-img">
+											<img src="{% static 'images/home-tile.png' %}"/>
+										</div>
+										<div class="preview-home-text">
+											<h2>Majors & Degrees</h2>
+											<p>Lorem Ipsum is simply dummy text of the printing  </p>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="preview-nav">
+							<a href="#" class="active">
+								<div><img src="{% static 'images/ic_home.png' %}" alt=""/></div>
+								<p>Home</p>
+							</a>
+							<a href="#">
+								<div><img src="{% static 'images/ic_nc-colleges.png' %}" alt=""/></div>
+								<p>NC Colleges</p>
+							</a>
+							<a href="#">
+								<div><img src="{% static 'images/ic_accessibility.png' %}" alt=""/></div>
+								<p>Disability Access</p>
+							</a>
+							<a href="#">
+								<div><img src="{% static 'images/ic_more.png' %}" alt=""/></div>
+								<p>More</p>
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %} 
+	
+{% block scripts %}
+{{ block.super }}
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		$( init );
+
+		function init() {
+  			$( ".droppable-area1" ).sortable({
+      			connectWith: ".connected-sortable",
+      			stack: '.connected-sortable'
+    		}).disableSelection();
+		}
+
+		$(".web-view").hide(); 
+		$("button.reveal").click(function(){
+			$(this).toggleClass("active").next().slideToggle("fast");
+			if ($.trim($(this).text()) === 'Web View') {
+				$(".mob-app-view").hide(); 
+				$(this).text('Mobile App view');
+			} else {
+				$(this).text('Web View');
+				$(".mob-app-view").show(); 
+			}
+			return false;
+		});
+
+		$("button.reveal").click(function(){
+			// if ($('.tilescroll')[0]){
+
+
+ 			$('.tilescroll').not('.slick-initialized').slick({
+ 				setPosition: true,
+  				dots: false,
+  				infinite: false,
+  				speed: 300,
+  				slidesToShow: 3,
+  				slidesToScroll:3,
+  				responsive: [
+    				{
+      					breakpoint: 1024,
+      					settings: {
+        					slidesToShow: 3,
+        					slidesToScroll: 3,
+        					infinite: true,
+        					dots: true
+      					}
+    				},
+    				{
+      					breakpoint: 600,
+      					settings: {
+        					slidesToShow: 2,
+        					slidesToScroll: 2
+      					}
+    				},
+    				{
+      					breakpoint: 480,
+      					settings: {
+        					slidesToShow: 1,
+        					slidesToScroll: 1
+      					}
+    				}
+  				]
+			});
+			// }
+
+		});
+		getTiles();
+		$('label[for=tile_url], input#tile_url').hide();
+		$('#tile_url_span').hide();
+		$('#tile_icon_prev').hide();
+		$("#tile_select_url_type").change(function(){
+			var value = $("#tile_select_url_type option:selected").val();
+			if (value == 'native'){
+				$('#tile_url_span').hide();
+				$('label[for=tile_url], input#tile_url').hide().prop('required',false);
+				$('label[for=tile_select_page], select#tile_select_page').show().prop('required',true);
+				$('#tile_select_page').show();
+			}
+			else{
+				$('#tile_url').show();
+				$('#tile_url_span').show();
+				$('label[for=tile_select_page], select#tile_select_page').hide().prop('required',false);
+				$('label[for=tile_url], input#tile_url').show().prop('required',true);
+			}
+		});
+
+		
+	});
+
+	var _URL = window.URL || window.webkitURL;
+	$("#file").change(function (e) {
+		var file, img;
+		var maxwidth = 375;
+		var maxheight = 211;
+		
+		if ((file = this.files[0])) {
+			img = new Image();
+			img.onload = function () {
+				if(this.width != maxwidth && this.height != maxheight){
+					alert('Selected file not in a proper resolution. Please select a proper image')
+					$("#file").val('')
+				}
+			};
+			img.src = _URL.createObjectURL(file);
+		}
+		
+	});
+
+	function editTile(tile) {
+		$('#tile_deactive').val('false');
+		$('#tile_active').val('true');
+		var modal = $('#addtile');
+		modal.find('#tile_icon_prev').hide()
+		modal.find('#uid').val(tile.uid);
+		modal.find('.modal-title').text('Edit Tile')
+		modal.find('#submit').text('Update')
+		modal.find('#tile_select_url_type').val(tile.url_type);
+		modal.find('#tile_title').val(tile.title);
+		modal.find('#tile_description').val(tile.description)
+
+		if (tile.url_type == 'native'){
+			// modal.find('#select_page').show();
+			$('#tile_url_span').hide();
+			modal.find('label[for=tile_select_page], select#tile_select_page').show().prop('required',true);
+			modal.find('label[for=tile_url], input#tile_url').hide().prop('required',false);
+
+		}
+		else{
+			// modal.find('#url').show();
+			$('#tile_url_span').show();
+			modal.find('label[for=tile_url], input#tile_url').show().prop('required',true);
+			modal.find('label[for=tile_select_page], select#tile_select_page').hide().prop('required',false);
+		}
+		if(tile.page){
+			modal.find('#tile_select_page').val(tile.page).attr('selected','selected');
+		}
+		if(tile.state == 'true'){
+			modal.find('#tile_active').prop("checked", true);
+		}else{
+			modal.find('#tile_deactive').prop("checked", true);
+		}
+		modal.find('#tile_url').val(tile.url);
+
+		if (tile.image_url){
+			modal.find('#image_url').val(tile.image_url);
+			modal.find('#tile_icon_prev').show()
+			html = '<div  class="col-md-12"><label>Current Tile Image </label><button title="Delete tile image" onclick="removeImage()" type="button" class="ml-2 text-danger"><i class="far fa-trash-alt"></i></button><br><img height="98" width="174" src="'+tile.image_url+'" alt=""/></div>'
+			modal.find('#tile_icon_prev').html(html);
+		}
+
+		modal.modal('show');
+	}
+
+	function removeImage(){
+		$('#tile_icon_prev').html('');
+		$('#image_url').val('');
+	}
+	
+	function getTiles(){
+		$.ajax({
+			type: 'GET',
+			success: function(data){
+				$('#tile_list').html(data);
+			}
+		});
+	};
+
+	function updateTileOrder(order){
+		$.ajax({
+				type: 'POST',
+				data: {'csrfmiddlewaretoken':  '{{ csrf_token }}',
+					   'type': 'order_update', 'values': JSON.stringify(order)},
+				success: function(data){
+					getTiles();
+					$("#alert_div").addClass("alert alert-success");
+					bootstrap_alert.warning('<strong>Success!</strong> Tile order updated.')
+				}
+			});
+	};
+
+	function deleteTile(tile){
+		swal({
+			title: "<h3>Are you sure you want to delete this tile '" + tile.title +"'?</h3>",
+			html: "title",
+			text: "Delete Confirmation?",
+			type: "warning",
+			showCancelButton: true,
+			confirmButtonColor: "#DD6B55",
+			confirmButtonText: "Delete",
+			closeOnConfirm: false
+		},
+		function() {
+			$.ajax({
+				type: "DELETE",
+				url: '/manage_home_page/?' + $.param({"uid": tile.uid}),
+				success: function(data) {}
+			})
+			.done(function(data) {
+				getTiles();
+				swal("Deleted!", "Tile successfully Deleted!", "success");
+			})
+		});
+	}
+
+
+	$(function(){
+		$("#tile-form").validate({
+    		rules: {
+        		title: {
+        			required: true,
+                },
+                page: {
+                	required: true,
+                },
+                url:{
+                	url: true,
+                }
+            },
+    		messages: {
+            	title: {
+           			required: "Please enter tile title.",                  
+                },
+                page: {
+           			required: "Please select a valid page from choices.",                  
+                },
+                url:{
+                	required: "Please provide a valid external url, with prefix 'http://'."
+                }
+            },
+            errorClass: "text-danger",
+     	});
+		$('#tile-form').on('submit', function(e){
+			e.preventDefault();
+
+			$("#tile-form").validate()
+
+			if (!$("#tile-form").valid()) return false;
+			var formData = new FormData(this);
+			formData.append('csrfmiddlewaretoken', '{{ csrf_token }}')
+			formData.append('type', 'tile_update')
+			var tile_title = $('#tile_title').val();
+			var uid = $('#uid').val();
+			if (uid){
+				message = tile_title +'" successfully updated.'
+			}else{
+				message = tile_title +'" successfully added.'
+			}
+
+			$.ajax({
+				type: 'POST',
+				data: formData,
+				contentType: false,
+				processData: false,
+				success: function(data){
+					getTiles();
+					$('#addtile').modal('toggle');
+					$("#alert_div").addClass("alert alert-success");
+					bootstrap_alert.warning('<strong>Success!</strong> Tile"' + message)
+				},
+
+			});
+		});
+
+		$('#home-page-submit').on('click', function(e){
+			e.preventDefault();
+			const file = $("#thumbnail_image")[0].files[0]
+			const fd = new FormData();
+			fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+			fd.append('thumbnail_image', file);
+			fd.append('type', 'home_page_update');
+			fd.append('banner_video_tile',  $('#banner-title').val());
+
+			$.ajax({
+				type: 'POST',
+				data: fd,
+				processData: false,
+			    contentType: false,
+				success: function(data){
+					getTiles();
+					$("#alert_div").addClass("alert alert-success");
+					bootstrap_alert.warning('<strong>Success!</strong> Home Page Updated.')
+					stateChange();
+				}
+			});
+		});
+
+		$('#home-page-preview').on('click', function(e){
+			$.ajax({
+				type: "GET",
+				url: '/manage_home_page/?' + $.param({"request_type": "get_home_page", "uid": '{{home_page.uid}}'}),
+				success: function(data) {
+					home = jQuery.parseJSON(data).home_page
+					var video_html = ''
+					var web_video_html = ''
+					var modal = $('#homepage-preview');
+					if (home.video != null){
+						var video_html = '<div class="preview-video-title">'+$('#banner-title').val()+'									</div><video width="247" height="139" controls><source src="'+home.video.url+'"  alt="#" autoplay></video>'
+						web_video_html = '<video height="500" id="videojs-vr-player1" class="video-js vjs-default-skin videowdhm" controls playsinline crossorigin="anonymous">\
+                    		<source src="'+home.video.url+'" crossorigin="anonymous"></video>'
+					}
+
+					var tile_html = ''
+					var web_preview_tile_html = ''
+					for (tile in home.active_tiles){
+						tile = home.active_tiles[tile];
+						description = tile.description || ''
+						tile_image_url = "static/images/default-home-img.jpg"
+						if (tile.image !=null){
+							tile_image_url = tile.image
+						}
+							tile_html += '<div class="preview-home-tile"><div class="preview-home-tile-img"><img src="/'+tile_image_url+'"/></div>'
+
+						tile_html += '<div class="preview-home-text"><h2>'+tile.title+'</h2><p>'+description+'</p></div></div>'
+						web_preview_tile_html += '<a href="" class="hometilearea"><div class="tile-img">\
+							<img src="/'+tile_image_url+'" class="mw-100" /><div class="tile-title p-1">\
+							'+tile.title+'</div></div><p class="p-2">'+description+'</p></a>'
+					}
+					
+					modal.find('#preview_video').html(video_html);
+					modal.find('#college_web_preview_video').html(web_video_html);
+
+					modal.find('#preview_tiles').html(tile_html);
+					modal.find('#web_preview_tile').html(web_preview_tile_html);
+
+					modal.modal('show');
+				}
+			})
+		});
+
+
+		
+	});
+
+
+	$('#addtile').on('hidden.bs.modal', function (e) {
+		$(this)
+		.find("input,textarea, radio")
+			.val('')
+			.end()
+		.find("input[type=checkbox], input[type=radio]")
+			.prop("checked", "")
+			.end();
+		$(this).find('#tile_active').prop("checked", true).val('true');
+		$(this).find('.modal-title').text('Add Tile')
+		$(this).find('#submit').text('Submit')
+		$(this).find('#tile_icon_prev').html('');
+		$(this).find('#tile_select_url_type').val('native').attr('selected','selected');
+		$(this).find('label[for=tile_select_page], select#tile_select_page').show().prop('required',true);
+		$(this).find('label[for=tile_url], input#tile_url').hide().prop('required',false);
+		$(this).find('#tile_select_page').val('');
+		$(this).find('#tile_url_span').hide();
+
+		
+		var form = $('#tile-form');
+    	form.validate().resetForm();
+    	form.find('.error').removeClass('text-danger');
+    	form.find('.text-danger').removeClass('text-danger');
+	})
+
+</script>
+
+
+{% endblock %} 

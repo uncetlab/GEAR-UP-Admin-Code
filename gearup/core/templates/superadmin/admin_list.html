@@ -1,0 +1,137 @@
+<div class="dataTables_wrapper">
+<div class="row">
+	<div class="col-sm-12 col-md-6">
+		<div class="dataTables_length" id="manage_admin_length">
+			<label>Show <select id="manage_admin_select" class="custom-select custom-select-sm form-control form-control-sm">
+				{% for i in range_list  %}
+					{% if i ==  admins.paginator.per_page %}
+						<option value="{{i}}" selected="true">{{i}}</option>
+					{% else %}
+						<option value="{{i}}" >{{i}}</option>
+					{% endif %}
+				{% endfor %}
+			</select> entries</label>
+		</div>
+	</div>
+	<div class="col-sm-12 col-md-6">
+		<div id="manage_admin_filter" class="dataTables_filter">
+			<label>Search:<input type="search" id="autoCompInput" class="form-control form-control-sm" placeholder="" aria-controls="manage_admin" {% if query != None %}value="{{ query|stringformat:'s' }}"{% endif %}></label>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<div class="table-responsive">
+			{% if admins %}
+				<table id="manage_admin" class="table table-striped table-bordered" style="width:100%">
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Email</th>
+							<th>Verified</th>
+							<th>Universitiies</th>
+							<th>Status</th>							
+							<th>Edit</th>
+							<th>Delete</th>
+						</tr>
+					</thead>
+					<tbody>
+				
+					{% for admin in admins %}
+					<tr id="{{admin.uid}}">
+						<td>{% firstof admin.user.get_full_name admin.user.username %}</td>
+						<td>{{admin.user.email}}</td>
+						<td> {% if admin.verified %}
+								<i class="fa fa-check" aria-hidden="true"></i>
+							{% else %}
+								<a href="#"  onClick="resendVerification('{{admin.user.email}}')" class="text-success" data-tooltip="tooltip">Resend link</a>
+						{% endif %}</td>
+						<td>{{admin.formatted_universities}}</td>
+						<td class="text-{% if admin.active %}success{% else %}warning{% endif %}">{% if admin.active %}Active{% else %}Inactive{% endif %}</td>						
+						<td><a href="#"  onClick="editadmin({{admin.to_json}})" class="text-success" data-tooltip="tooltip"><i class="far fa-edit"></i></a></td>
+						<td><a href="#" onclick="deleteAdmin({'uid': '{{admin.uid}}','name': '{% firstof admin.user.get_full_name admin.user.username %}'})" class="text-danger"><i class="far fa-trash-alt"></i></a></td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		{% else %}
+			<small class="ml-auto pt-3 text-info"><i>Sorry no results found.</i></small>
+		{% endif %}
+	</div>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		<div class="dataTables_paginate paging_simple_numbers">
+			<ul class="pagination">
+		{% if admins.has_previous %}
+		<li class="paginate_button page-item ">
+			<a class="page-link" href="#" onclick="getPaginate('{{ admins.previous_page_number }}')" >Previous</a></li>
+			{% if admins.number > 3 %}
+				<li class="paginate_button page-item "><a class="page-link" href="#" onclick="getPaginate(1)">1 </a></li>
+				{% if admins.number > 4 %}
+					<li class="paginate_button page-item "><button class="page-link" disabled="">...</button></li>
+				{% endif %}
+			{% endif %}
+		{% endif %}
+
+		{% for num in admins.paginator.page_range %}
+			{% if admins.number == num %}
+				<li class="paginate_button page-item active"><a class="page-link" href="#" onclick="getPaginate('{{ num }}')" >{{ num }}</a></li>
+			{% elif num > admins.number|add:'-3' and num < admins.number|add:'3' %}
+				<li class="paginate_button page-item "><a class="page-link" href="#" onclick="getPaginate('{{ num }}')">{{ num }}</a></li>
+			{% endif %}
+		{% endfor %}
+
+		{% if admins.has_next %}
+			{% if admins.number < admins.paginator.num_pages|add:'-3' %}
+				<li class="paginate_button page-item "><button class="page-link" disabled="">...</button></li>
+				<li class="paginate_button page-item "><a class="page-link" href="#" onclick="getPaginate('{{ admins.paginator.num_pages }}')" >{{ admins.paginator.num_pages }} </a></li>
+			{% elif admins.number < admins.paginator.num_pages|add:'-2' %}
+				<li class="paginate_button page-item "><a class="page-link" href="#" onclick="getPaginate('{{ admins.paginator.num_pages }}')">{{ admins.paginator.num_pages }}</a></li>
+			{% endif %}
+			<li class="paginate_button page-item "><a class="page-link" href="#" onclick="getPaginate('{{ admins.next_page_number }}')" >Next</a></li>
+		{% endif %}
+	</ul>
+		</div>
+	</div>			
+</div>
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('[data-tooltip="tooltip"]').tooltip();
+
+		$("#manage_admin_select").change(function(){
+			var value = $("#manage_admin_select option:selected").val();
+			$.ajax({
+				type: "GET",
+				url: '/manage_admin/?per_page='+value,
+				success: function(data) {
+					$('#admin_list').html(data);
+				}
+			})	
+		});
+
+		$("#autoCompInput").bind("keypress", {}, keypressInBox);
+		$('#autoCompInput').on('input', function(e) {
+			if('' == this.value) {
+				window.location.href = '/manage_admin/'
+			}
+		});
+			function keypressInBox(e) {
+    			var code = (e.keyCode ? e.keyCode : e.which);
+    			if (code == 13) { //Enter keycode                        
+        			e.preventDefault();
+        			$.ajax({
+						type: "GET",
+						url: '/manage_admin/?query='+$("#autoCompInput").val(),
+						success: function(data) {
+							$('#admin_list').html(data);
+						}
+					})
+    			}
+    
+		};
+	});
+</script>
