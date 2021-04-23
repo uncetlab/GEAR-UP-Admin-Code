@@ -1,0 +1,138 @@
+{% load static %}
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Dashboard</title>
+<link rel="shortcut icon" href="{% static 'images/favicon.png' %}" type="image/x-icon">
+<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" >
+<link rel="stylesheet" href="{% static 'fontawesome/css/all.min.css' %}" >
+<link rel="stylesheet" href="{% static 'css/custom.css' %}" >
+</head>
+<body class="d-flex flex-column">
+  <div class="page-container">
+  <input class="d-none" id="session-university" type="text" value="{{request.session.university}}">
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#"><img class="logo-img-height" src="{% if request.session.university_logo %}{{request.session.university_logo}}{% else %}{% static 'images/college-tile-default-img.jpg' %}{% endif %}" alt="logo"/></a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+      {% if request.user.admin.universities.count > 1 or request.user.admin.role == 'super_admin' %}
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+      <a class="nav-link border border-success rounded shadow-sm " href="{% url 'admin-dashboard' %}"> <i class="fas fa-tachometer-alt"></i> Uniconsole admin</a>
+      </li> 
+    
+    </ul>
+    {% endif %}
+       <div class="nav-item dropdown form-inline my-2 my-lg-0 ml-auto">
+      <a class="nav-link dropdown-toggle dropdownlink" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        {{request.user.get_full_name}}
+      </a>
+      <div class="dropdown-menu  dropdown-menu-right" aria-labelledby="navbarDropdown">
+        <a class="dropdown-item" href="{% url 'edit-profile' %}">Change Password</a>      
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item text-danger" href="/logout/">Logout</a>
+      </div>
+      </div>
+    
+    </div>
+  </nav>  
+
+  <div class="container content-wrap">
+    <div class="box-wrap">
+      <div class="row pagetitle">
+        <div class="col-md-12">
+          <h1>Dashboard</h1>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-4">
+          <a href="{% url 'manage-schools' %}">
+            <div class="boxarea">
+              <div class="imgarea">
+              <img src="{% static 'images/manage-school.png' %}" alt="manage school" />
+              </div>
+              <h2>Manage Schools</h2>
+            </div>
+          </a>
+        </div>
+        <div class="col-md-4">
+          <a href="{% url 'manage-menu' %}">
+            <div class="boxarea">
+              <div class="imgarea">
+              <img src="{% static 'images/manage-menu.png' %}" alt="manage menu" />
+              </div>
+              <h2>Manage Menu</h2>
+            </div>
+          </a>
+        </div>
+        <div class="col-md-4">
+          <a href="{% url 'manage-home-page' %}">
+            <div class="boxarea">
+              <div class="imgarea">
+              <img src="{% static 'images/manage-home.png' %}" alt="manage home page" />
+              </div>
+              <h2>Manage Home Page</h2>
+            </div>
+          </a>
+        </div>    
+        <div class="col-md-3">
+          <a href="{% url 'manage-custom-page' %}">
+            <div class="boxarea">
+              <div class="imgarea">
+              <img src="{% static 'images/manage-page.png' %}" alt="manage page" />
+              </div>
+              <h2>Manage Pages</h2>
+            </div>
+          </a>
+        </div>
+        <div class="col-md-3">
+          <a href="{% url 'manage-colleges' %}">
+          
+            <div class="boxarea">
+              <div class="imgarea">
+              <img src="{% static 'images/manage-college.png' %}" alt="manage college" />
+              </div>
+              <h2>Manage Colleges</h2>
+            </div>
+          </a>
+        </div>
+        <div class="col-md-3">
+          <a href="{% url 'manage-majors' %}">
+            <div class="boxarea">
+              <div class="imgarea">
+              <img src="{% static 'images/manage-major.png' %}" alt="manage major" />
+              </div>
+              <h2>Manage Majors</h2>
+            </div>
+          </a>
+        </div>
+        <div class="col-md-3">
+          <a href="{% url 'manage-careers' %}">
+            <div class="boxarea">
+              <div class="imgarea">
+              <img src="{% static 'images/manage-careers.png' %}" alt="manage major" />
+              </div>
+              <h2>Manage Careers</h2>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="gearup-footer text-center">   
+      Powered by <a href="https://www.marlabs.com/" target="_blank">Marlabs</a>   
+  </div>
+  
+<script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+<script src="{% static 'js/popper.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+
+</body>
+</html>

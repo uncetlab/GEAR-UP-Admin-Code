@@ -1,0 +1,840 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Manage Career{% endblock %}
+
+{% block content %}
+<form id="career-form" enctype="multipart/form-data"  method="post">
+	<div class="container content-wrap">
+		<div class="row pagetitle">
+			<div class="col-md-12">
+				
+				<h1>{% if career.active %}Edit Career{% else %}Add Career{% endif %}</h1> <a href="{% url 'manage-careers' %}" class="btn btn-add">View Career List</a> 
+			</div>
+		</div>		 	
+		<div class="row">
+			<div class="col-md-4">
+				<label>Career</label>
+				<input type="hidden" id="career_uid" name="career_uid" {% if career_uid != None %}value="{{ career_uid|stringformat:'s' }}"{% endif %} />
+				<input type="text" id="career_career" class="form-control" name="career" placeholder="Career" {% if form.career.value != None %}value="{{ form.career.value|stringformat:'s' }}"{% endif %} />
+			</div>
+			<div class="col-md-4">
+				<label>Email Address</label>
+				<input type="email" id="email" name="email" class="form-control" placeholder="Email Address" {% if form.email.value != None %}value="{{ form.email.value|stringformat:'s' }}"{% endif %} />
+			</div>
+			<div class="col-md-4">
+				<label>Phone Number</label>
+				<input type="text" id="phone_number" name="phone_number" class="form-control" placeholder="Phone Number" {% if form.phone_number.value != None %}value="{{ form.phone_number.value|stringformat:'s' }}"{% endif %}/>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-4">
+				<label>Website</label>
+				<input type="text" id="website" name="website" class="form-control" placeholder="Website" {% if form.website.value != None %}value="{{ form.website.value|stringformat:'s' }}"{% endif %}/>
+			</div>
+			<div class="col-md-4">
+				<label>Facebook URL</label>
+				<input type="text" id="facebook_url" name="facebook_url" class="form-control" placeholder="Facebook URL" {% if form.facebook_url.value != None %}value="{{ form.facebook_url.value|stringformat:'s' }}"{% endif %}/>
+			</div>
+			<div class="col-md-4">
+				<label>Twitter</label>
+				<input type="text" id="twitter_url" name="twitter_url" class="form-control" placeholder="Twitter URL" {% if form.twitter_url.value != None %}value="{{ form.twitter_url.value|stringformat:'s' }}"{% endif %}/>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-4">
+				<label>LinkedIn URL</label>
+				<input type="text" id="linkedin_url" name="linkedin_url" class="form-control" placeholder="LinkedIn URL" {% if form.linkedin_url.value != None %}value="{{ form.linkedin_url.value|stringformat:'s' }}"{% endif %}/>
+			</div>
+			<div class="col-md-4">
+				<label>Instagram URL</label>
+				<input type="text" id="instagram_url" name="instagram_url" class="form-control" placeholder="Instagram URL" {% if form.instagram_url.value != None %}value="{{ form.instagram_url.value|stringformat:'s' }}"{% endif %}/>
+			</div>
+			
+		</div>
+
+		
+		<div class="row">
+			<div class="col-md-12">
+				<label>Banner Video</label><span class="hint">Recommended video ratio 16:9</span>
+				{% if career_uid %}
+					{% include "render_video.html" with url=video_url name=video_name uid=video_id obj_type="career" obj_id=career_uid %}
+					<input type="text" style="display: none" id="hidden_content" {% if form.content.value != None %}value="{{ form.content.value|stringformat:'s' }}"{% endif %} />
+				{% endif %}
+				<div class="col-md-6">
+					<div class="custom-file mb-3">
+						<input type="file" class="custom-file-input" id="thumbnail_image" name="thumbnail_image">
+						<span class="hint">Recommended image size is 2MB.</span>
+						<label class="custom-file-label" for="thumbnail_image">Set Thumbnail for Banner Video</label>
+					</div>
+                	{% if career.video and career.video.thumbnail %}
+            			<label class="form-control-file" for="thumbnail_image_url">Current Thumbnail</label><img id="thumbnail_image_url" height="98" width="174" src="{{career.video.thumbnail.url}}" alt=""/>
+            		{% endif %}
+				</div>
+
+			</div>
+		
+		</div>
+		<div class="row">
+			<div class="col-md-6">
+				<label>Career Logo</label><br>
+				{% if form.logo.value %}
+					<img id="career_logo" height="98" width="174" src="{{form.instance.logo.url}}" alt=""/>
+					<br>Change:
+				{% endif %}
+				<input type="file"  class="form-control-file" name="logo" id="id_logo" />
+				<span class="hint">Recommended image size is 2MB.</span> 
+			</div>
+
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<label>Add Content</label>
+				<div id="custompageeditor">						 
+				</div>
+			</div>
+		</div>
+
+		{% if career.uid %}
+		<div id="tile_list" class="row"></div>
+		{% endif %}
+
+		<div class="row">
+			<div class="col-md-12 text-right">
+			
+			<button id="career-submit" type="submit" class="btn btn-primary">{% if career.active %}Update{% else %}Submit{% endif %}</button>
+
+		
+			<button type="button" id="preview_career" class="btn btn-preview ml-1 mr-1">Preview</button>
+			<!-- data-toggle="modal" data-target="#page-preview" -->
+				<button type="button" onclick="location.href='/manage-careers/';"  class="btn btn-default" data-dismiss="modal">Close</button>
+		</div></div>
+	</div>
+</form>
+
+
+<!--  page preview Modal -->
+<div class="modal" id="page-preview">
+	<div class="modal-dialog modal-xl">
+		<div class="modal-content">
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<h4 class="modal-title">College Preview</h4>
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+			</div>
+			<!-- Modal body -->
+			<div class="modal-body">
+				<button class="reveal btn btn-outline-secondary">Web View </button>
+				<!-- web view -->
+				<div class="web-view">
+					<div class="wrapper">
+						<div class="container-fluid bg-white">
+							<nav class="navbar navbar-expand-lg pt-0 pb-0 pl-0 mb-2 container advmenu">
+								<a class="navbar-brand p-0" href="#"><img class="logo-img-height" src="{% if request.session.university_logo %}{{request.session.university_logo}}{% else %}{% static 'images/college-tile-default-img.jpg' %}{% endif %}" alt="Get2College logo" /></a>
+								<ul class="mr-auto links">
+									<li class="nav-item active"> <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a> </li>
+									<li class="nav-item"> <a class="nav-link" href="#">College</a> </li>
+									<li class="nav-item"> <a class="nav-link" href="#">Disability Access </a> </li>
+								</ul> 
+								<button><i class="fas fa-ellipsis-h"></i></button>
+								<ul class="hidden-links hidden"></ul>
+							</nav>
+						</div>
+						<div class="container bg-white">
+							<div class="row">
+								<div class="col-md-12 d-flex">
+									<h1 class="page-title college_name_preview">College Name</h1>
+									<div class="ml-auto" id="web_preview_social_media">
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-12 college_web_preview_video"><br/>
+									<video height="500" id="videojs-vr-player1" class="video-js vjs-default-skin videowd" controls playsinline crossorigin="anonymous">
+										<source src="https://dnrm9jv689tm1.cloudfront.net/production/hompeage-intro-summer-2019-27e245f3-f221-4364-bccf-14f4601eb0ac.mp4" crossorigin="anonymous">
+									</video><br/>
+								</div>
+							</div>
+							<div class="row ml-1 mr-1 ">
+								<div class="col-md-12 pt-2 pb-2 contentarea preview_content">
+				               		What is Lorem Ipsum?
+									Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+								</div>
+								<div class="web-details-tile preview_tile" ></div>
+							</div>
+						</div>
+						<div class="push"></div>
+					</div>
+					<footer class="sticky-footer" class="py-4 bg-dark text-white-50">
+						<div class="container text-center"> <small>Copyright &copy; Get2College</small> </div>
+					</footer>
+				</div>
+				<!-- mobile view -->
+				<div class="preview-bg mob-app-view">
+					<div class="preview-wrap">
+						<div class="preview-topbar">
+							<div class="backarrow"><img src="{% static 'images/ic_arrow_back.png' %}"/></div>
+							<h1 class="college_name_preview">East Carolina University</h1>
+							<span id="email-icon"></span>
+						</div>
+						<div class="preview-content-wrap">
+							<div class="preview-content">							
+								<div class="college_preview_video">
+									
+									<img src="{% static 'images/video-img.jpg' %}" alt=""/>
+									<div class="preview-video-playbtn"><a href="#"><img src="{% static 'images/ic_play_btn.png' %}" alt=""/></a></div>
+								</div>
+								
+								<div class="preview-html-wrap">
+									<div id="preview_social_media_link" class="socialmedia-icons mb-1 pb-1 border-bottom">Follow us on : <img src="{% static 'images/Facebook_black.png' %}" alt=""/> <img src="{% static 'images/LinkedIN_black.png' %}" alt=""/> <img src="{% static 'images/Twitter_black.png' %}" alt=""/></div>
+									<div class="preview_content">
+									Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s
+									<img src="{% static 'images/video-img.jpg' %}"/>
+									Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s
+									</div>
+									<div class="college-tile-wrap preview_tile">
+										<div class="college-tile">
+											<a href="#">
+												<div class="clg-tile-img">
+													<img src="{% static 'images/ic_financial.png' %}" alt=""/>
+												</div>Admissions
+											</a>
+										</div>
+										<div class="college-tile">
+											<a href="#">
+												<div class="clg-tile-img">
+													<img src="{% static 'images/ic_admission.png' %}" alt=""/>
+												</div>Financial Aid
+											</a>
+										</div>
+										<div class="college-tile">
+											<a href="#">
+												<div class="clg-tile-img">
+													<img src="{% static 'images/ic_financial.png' %}" alt=""/>
+												</div>Dummy Text
+											</a>
+										</div>
+										<div class="college-tile">
+											<a href="#">
+												<div class="clg-tile-img">
+													<img src="{% static 'images/ic_admission.png' %}" alt=""/>
+												</div>Dummy text 2
+											</a>
+										</div>
+									</div>
+								</div>
+								<div id="phone-icon" class="message-icon"></div>
+							</div>
+							<div>
+								<div class="preview-nav">
+									<a href="#" class="active">
+										<div><img src="{% static 'images/ic_home.png' %}" alt=""/></div>
+										<p>Home</p>
+									</a>
+									<a href="#">
+										<div><img src="{% static 'images/ic_nc-colleges.png' %}" alt=""/></div>
+										<p>Colleges</p>
+									</a>
+									<a href="#">
+										<div><img src="{% static 'images/ic_accessibility.png' %}" alt=""/></div>
+										<p>Disability Access</p>
+									</a>
+									<a href="#">
+										<div><img src="{% static 'images/ic_more.png' %}" alt=""/></div>
+										<p>More</p>
+									</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Add tile Modal -->
+<div class="modal" id="addtile">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<form id="tile-form" enctype="multipart/form-data"  method="post">
+				{% csrf_token %}
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<h4 class="modal-title">Add Tile</h4>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+
+				<!-- Modal body -->
+				<div class="modal-body">
+					<input type="hidden" id="tile_uid" name="tile_uid">
+					<div id="tile_icon_prev" class="row">				
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<label>Image</label><span class="hint">Recommended image resolution 375X211</span>
+							<input type="file" name="image" id="file" class="form-control-file" />
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-5">
+							<label>Title</label>
+							<input id="tile_title" type="text" placeholder="Required Field" name="title" class="form-control" />
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-5">
+							<label>Description</label>
+							<input id="tile_description" type="text" name="description" class="form-control" />
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<label for="tile_url">External Url</label><br>
+							<span class="hint text-lightgray"><i class="fas fa-exclamation-triangle"></i> For better user experience mobile friendly websites are recommended</span>
+							<div class="col-md-5 m-0 pl-0"><input id="tile_url" name="url" type="text" class="form-control" required /></div>
+							<input placeholder="Required Field" type="text" name="image_url" style="display: none" id="image_url"/>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<label>Tile Status</label><br/>
+							<label class="radio-inline"><input id="tile_active" checked="true" type="radio" name="active" value="true" >Active</label>
+							<label class="radio-inline"><input id="tile_deactive" type="radio" name="active" value="false">Inactivate</label>
+						</div>
+					</div>
+				</div>
+
+				<!-- Modal footer -->
+				<div class="modal-footer">
+					<button id="tile-submit" type="submit" class="btn btn-primary">Submit</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+	
+{% endblock %} 
+{% block scripts %}
+{{ block.super }}
+<script src="{% static 'js/quill.js' %}"></script>
+<script src="{% static 'js/image-resize.min.js' %}"></script>
+
+<script>
+	var quill = new Quill('#custompageeditor', {
+		modules: {
+			imageResize: {
+				displaySize: true
+			},
+			toolbar: [
+				['bold', 'italic', 'underline', 'strike', 'image'],
+				['blockquote', 'code-block'],
+				[{ 'header': 1 }, { 'header': 2 }],
+				[{ 'list': 'ordered'}, { 'list': 'bullet' }],
+				[{ 'script': 'sub'}, { 'script': 'super' }],
+				[{ 'indent': '-1'}, { 'indent': '+1' }],
+				[{ 'direction': 'rtl' }],
+				[{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+				[{ 'align': [] }],
+				['clean', 'link']
+			]
+		},
+		theme: 'snow',
+		color : true,
+		enable: false,
+
+	});
+
+	var Link = Quill.import('formats/link');
+	Link.sanitize = function(url) {
+		if (!url.startsWith("http")){
+			url = 'http://' + url
+		}
+		// modify url if desired
+	  	return url;
+	}
+
+	function selectLocalImage() {
+		const input = document.createElement('input');
+		input.setAttribute('type', 'file');
+		input.click();
+
+		// Listen upload local image and save to server
+		input.onchange = function() {
+			const file = input.files[0];
+
+			// file type is only image.
+			if (/^image\//.test(file.type)) {
+				saveToServer(file);
+			} else {
+				console.warn('You could only upload images.');
+			}
+		};
+	}
+
+	function saveToServer(file) {
+		const fd = new FormData();
+		fd.append('csrfmiddlewaretoken', '{{ csrf_token }}')
+		fd.append('image', file);
+
+		const xhr = new XMLHttpRequest();
+		xhr.open('POST', '/manage_file/', true);
+		xhr.onload = function(){
+			if (xhr.status === 200) {
+				// this is callback data: url
+				const url = JSON.parse(xhr.responseText).data;
+				insertToEditor(url);
+			}
+		};
+		xhr.send(fd);
+	}
+
+	function removeImage(){
+		$('#tile_icon_prev').html('');
+		$('#image_url').val('');
+	}
+
+
+	function insertToEditor(url) {
+		// push image url to rich editor.
+		const range = quill.getSelection();
+		quill.insertEmbed(range.index, 'image', url);
+	}
+
+	// quill editor add image handler
+	quill.getModule('toolbar').addHandler('image', function() {
+		selectLocalImage();
+	});
+	if ($("#career_uid").val()){
+
+		quill.root.innerHTML = $("#hidden_content").val();
+	}
+
+
+	$('#preview_career').on('click', function(e){
+		var modal = $('#page-preview');
+		modal.find('.college_name_preview').html($("#career_career").val());
+
+		modal.find('.college_preview_video').html('<img src="{% static "images/default_video_img.png" %}" alt="" height="139" width="247" />')
+		if (typeof preview_video_html !== 'undefined'){
+			console.log('aaaaaaaaaaaaaaa')
+			modal.find('.college_preview_video').html(preview_video_html);
+			modal.find('.college_preview_video').html(preview_video_html.replace('replace_video_title', $('#banner-title').val()));
+		}else if (typeof web_preview_video_html !== 'undefined'){
+			console.log('bbbbbbbbbbbbbbb')
+			modal.find('.college_web_preview_video').html(web_preview_video_html.replace('replace_video_title', $('#banner-title').val()));
+		}
+		else{
+			if('{{form.instance.video}}' != 'None'){
+				modal.find('.college_web_preview_video').html('\
+					<video height="500" id="videojs-vr-player1" class="video-js vjs-default-skin videowd" \
+					controls playsinline crossorigin="anonymous">\
+					<source src="{{form.instance.video.cdn_url }}" crossorigin="anonymous">\
+					</video><br/>')
+				modal.find('.college_preview_video').html('\
+					<div class="preview-video-title">' + $('#banner-title').val() + '</div>\
+					<video width="247" height="139" controls><source src="{{form.instance.video.cdn_url }}" autoplay></video>')
+			}
+			else{
+				modal.find('.college_web_preview_video').html('<img src="{% static "images/default_video_img.png" %}" alt="" height="500" width="100%" />')
+			}
+		}
+		social_media_html = '';
+		web_preview_social_media_html = '<ul class="list-group flex-row social-icons" >';
+		modal.find('#email-icon').html('');
+		modal.find('#phone-icon').html('');
+
+		if ($("#email").val()){
+			web_preview_social_media_html += '<li class="list-group-item border-0"><a href="mailto:'+$("#email").val()+'"><i class="far fa-envelope fa-2x"></i></a></li>'
+			modal.find('#email-icon').html('<a href="mailto:'+$("#email").val()+'"><img src="{% static "images/ic_mail.png" %}" alt=""/></a>')
+			
+		}
+		if ($("#facebook_url").val()){
+			web_preview_social_media_html += '<li class="list-group-item border-0"><a target="_blank" href="'+$("#facebook_url").val()+'"><i class="fab fa-facebook fa-2x fb-color"></i></a></li>'
+			social_media_html += '<a target="_blank" href="'+$("#facebook_url").val()+'"><img src="{% static "images/Facebook_black.png" %}" alt=""/></a>'
+		}
+		if ($("#twitter_url").val()){
+			web_preview_social_media_html += '<li class="list-group-item border-0"><a target="_blank" href="'+$("#twitter_url").val()+'"><i class="fab fa-twitter fa-2x tw-color"></i></a></li>'
+			social_media_html += '<a target="_blank" href="'+$("#twitter_url").val()+'"><img src="{% static "images/Twitter_black.png" %}" alt=""/></a>'
+		}
+		if ($("#linkedin_url").val()){
+			web_preview_social_media_html += '<li class="list-group-item border-0"><a target="_blank" href="'+$("#linkedin_url").val()+'"><i class="fab fa-linkedin fa-2x in-color"></i></a></li>'
+			social_media_html += '<a target="_blank" href="'+$("#linkedin_url").val()+'"><img src="{% static "images/LinkedIN_black.png" %}" alt=""/></a>'
+		}
+		if ($("#instagram_url").val()){
+			web_preview_social_media_html += '<li class="list-group-item border-0"><a href="'+$("#instagram_url").val()+'"><i class="fab fa-instagram fa-2x in-color"></i></a></li>'
+			social_media_html += '<a target="_blank" href="'+$("#instagram_url").val()+'"><img src="{% static "images/instagram.png" %}" alt=""/></a>'
+		}
+		if ($("#website").val()){
+			social_media_html += '<a target="_blank" href="'+$("#website").val()+'"><img src="{% static "images/web-icon.png" %}" alt=""/></a>'
+			web_preview_social_media_html += '<li class="list-group-item border-0"><a target="_blank" href="'+$("#website").val()+'" class="btn btn-outline-primary btn-sm">Visit Website</a></li>'
+		}
+		if ($("#phone_number").val()){
+			modal.find('#phone-icon').html('<img src="{% static "images/ic_msg.png" %}" alt=""/>')
+			
+		}
+		
+		modal.find('#web_preview_social_media').html(web_preview_social_media_html + '</ul>')
+
+		modal.find('#preview_social_media_link').html(social_media_html);
+		page_content = quill.root.innerHTML;
+		modal.find('.preview_content').html(page_content);
+		// var tags = $("#tags").val();
+		// var tags_array = tags.split(',');
+		// tags_html = ''
+		// for(var i = 0; i < tags_array.length; i++) {
+		//    tags_array[i] = tags_array[i].replace(/^\s*/, "").replace(/\s*$/, "");
+
+		//    tags_html += '<div class="tagarea">'+tags_array[i]+'</div>'
+		// }
+		// modal.find('#preview_tags').html(tags_html);
+		tile_html = ''
+		$.ajax({
+			type: "GET",
+			url: "/api/careers/{{career_uid}}?add_tile=True",
+			success: function(data) {
+				tile_html = ''
+				if (data.active_tiles){
+					for(var i = 0; i < data.active_tiles.length; i++) {
+						if (data.active_tiles[i].image){
+							image_url = data.active_tiles[i].image
+						}else{
+							image_url = "static/images/default_tile_img-s.png"
+						}
+				
+					   tile_html += '<div class="college-tile"><a href="'+data.active_tiles[i].url +'"><div class="clg-tile-img"><img src="/'+image_url +'" alt=""/></div>'+data.active_tiles[i].title +'</a></div>'
+
+					}
+				}
+				console.log('SSSSSSSSSSSSSSSSSSSSS', tile_html);
+				modal.find(".preview_tile").html(tile_html);
+			}
+		});
+
+		modal.modal('show');
+
+	});
+
+	function editTile(tile) {
+		$('#tile_deactive').val('false');
+		$('#tile_active').val('true');
+		var modal = $('#addtile');
+		modal.find('#tile_icon_prev').hide()
+		modal.find('#tile_uid').val(tile.uid);
+		modal.find('.modal-title').text('Edit Tile')
+		modal.find('#tile-submit').text('Update')
+		modal.find('#tile_select_url_type').val(tile.url_type);
+		modal.find('#tile_title').val(tile.title);
+		modal.find('#tile_description').val(tile.description)
+		if(tile.state == 'true'){
+			modal.find('#tile_active').prop("checked", true);
+		}else{
+			modal.find('#tile_deactive').prop("checked", true);
+		}
+		modal.find('#tile_url').val(tile.url);
+
+		if (tile.image_url){
+			modal.find('#image_url').val(tile.image_url);
+			modal.find('#tile_icon_prev').show()
+			html = '<div  class="col-md-12"><label>Current Tile Image </label><button type="button" title="Delete tile image" onclick="removeImage()" type="button" class="ml-2 text-danger"><i class="far fa-trash-alt"></i></button><br><img height="98" width="174" src="'+tile.image_url+'" alt=""/></div>'
+			modal.find('#tile_icon_prev').html(html);
+		}
+
+		modal.modal('show');
+	}
+
+	function stateChange(){
+		if (uploaded_file_id){
+			getVideo(uploaded_file_id);
+
+		}
+	}
+	
+	function getTiles(){
+		$.ajax({
+			type: 'GET',
+			success: function(data){
+				$('#tile_list').html(data);
+			}
+		});
+	};
+
+	function updateTileOrder(order){
+		$.ajax({
+				type: 'POST',
+				data: {'csrfmiddlewaretoken':  '{{ csrf_token }}',
+					   'type': 'order_update', 'values': JSON.stringify(order)},
+				success: function(data){
+					getTiles();
+					$("#alert_div").addClass("alert alert-success");
+					bootstrap_alert.warning('<strong>Success!</strong> Tile order updated.')
+				}
+			});
+	};
+
+	function deleteTile(tile){
+		swal({
+			title: "<h3>Are you sure you want to delete this tile '" + tile.title +"'?</h3>",
+			html: "title",
+			text: "Delete Confirmation?",
+			type: "warning",
+			showCancelButton: true,
+			confirmButtonColor: "#DD6B55",
+			confirmButtonText: "Delete",
+			closeOnConfirm: false
+		},
+		function() {
+			$.ajax({
+				type: "DELETE",
+				url: '/manage_home_page/?' + $.param({"uid": tile.uid}),
+				success: function(data) {}
+			})
+			.done(function(data) {
+				getTiles();
+				swal("Deleted!", "Tile successfully Deleted!", "success");
+			})
+		});
+	}
+	$(function(){
+
+		$("#tile-form").validate({
+			rules: {
+				title: {
+					required: true,
+				},
+				page: {
+					required: true,
+				},
+				url: {
+					url: true,
+					required: true,
+				},
+			},
+			messages: {
+				title: {
+					required: "Please enter tile title.",                  
+				},
+				page: {
+					required: "Please select a valid page from choices.",                  
+				},
+				url:{
+					required: "Please provide a valid external url, with prefix 'http://'"
+				}
+			},
+			errorClass: "text-danger",
+			ignore:'[class*="ql-"]'
+		});
+		$('#tile-form').on('submit', function(e){
+
+			e.preventDefault();
+
+			$("#tile-form").validate();
+
+			if (!$("#tile-form").valid()) return false;
+
+			var formData = new FormData(this);
+			formData.append('csrfmiddlewaretoken', '{{ csrf_token }}')
+			formData.append('type', 'tile_update')
+			formData.append('url_type', 'external')
+			var tile_title = $('#tile_title').val();
+			var uid = $('#tile_uid').val();
+			if (uid){
+				message = tile_title +'" successfully updated.'
+			}else{
+				message = tile_title +'" successfully added.'
+			}
+
+			$.ajax({
+				type: 'POST',
+				data: formData,
+				contentType: false,
+				processData: false,
+				success: function(data){
+					getTiles();
+					$('#addtile').modal('toggle');
+					$("#alert_div").addClass("alert alert-success");
+					bootstrap_alert.warning('<strong>Success!</strong> Tile"' + message)
+				},
+
+			});
+		});
+
+		$.validator.addMethod("checkPhoneNumber", function (value) {
+			if (value){
+				var pattern = new RegExp(/\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{4})/);
+				return  pattern.test(value)
+			}
+			return true
+		}, "The field contains non-admitted characters");
+
+		$("#career-form").validate({
+
+			rules: {
+				career: {
+					required: true,
+				},
+				phone_number: {
+					maxlength:15,
+					checkPhoneNumber: function(element){
+						var phone_required = false;
+						var phone_number_value = $("#phone_number").val();
+						if (phone_number_value){
+							phone_required = true
+						}
+						return phone_required;
+					},
+				},
+				logo: {
+					required: function(element){
+						var logo_required = true;
+						var img = document.getElementById("career_logo");
+						if (img && img.src.length > 0){
+							logo_required = false
+						}
+						return logo_required;
+					}
+				},
+				career_status: {
+					required: true,
+				},
+				facebook_url: {
+					url: true
+				},
+				twitter_url: {
+					url: true
+				},
+				linkedin_url: {
+					url: true
+				},
+				instagram_url: {
+					url: true
+				},
+				website: {
+					url: true
+				},
+				email: {
+					email: true
+				},
+
+
+			},
+			messages: {
+				career: {
+					required: "Please enter Career title.",                  
+				},
+				phone_number:{
+					checkPhoneNumber:"Please enter a proper phone number"
+				},
+				logo:{
+					required: "Please upload a logo for career."
+				},
+				career_status:{
+					required: "Please set career status."
+				},
+				website:{
+					url: "Please add a valid website address, with prefix 'http://'."
+				},
+				instagram_url:{
+					url: "Please provide a valid instagram url, with prefix 'http://'."
+				},
+				facebook_url:{
+					url: "Please provide a valid facebook url, with prefix 'http://'."
+				},
+				linkedin_url:{
+					url: "Please provide a valid linkedin url, with prefix 'http://'."
+				},
+				twitter_url:{
+					url: "Please provide a valid twitter url, with prefix 'http://'."
+				},
+				email:{
+					url: "Please provide a valid email address, with prefix 'http://'."
+				},
+
+			},
+			errorClass: "text-danger",
+			ignore:'[class*="ql-"]'
+		});
+
+		$('#career-form').on('submit', function(e){
+			e.preventDefault();
+			
+			$("#career-form").validate();
+			
+			if (!$("#career-form").valid()) return false;
+			var formData = new FormData(this);
+
+			formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+			formData.append('content', quill.root.innerHTML);
+			if ($("#replace-video-id").val()){
+				
+				formData.append('file_id',  $("#replace-video-id").val());
+			}
+			formData.append('video_title', $("#banner-title").val());
+			
+			var career_career = $('#career_career').val();
+			var uid = $('#career_uid').val();
+			if (uid){
+				message = career_career +'" successfully saved.'
+			}else{
+				message = career_career +'" successfully added.'
+			}
+			$.ajax({
+				type: 'POST',
+				data: formData,contentType: false,
+				processData: false,
+				success: function(data) {
+					$("#alert_div").addClass("alert alert-success");
+					bootstrap_alert.warning('<strong>Success!</strong> Career"' + message )
+					setTimeout(function(){ window.location.href = '/manage-careers/'; }, 1000);
+					
+					// window.location.reload(true);
+				},
+				error: function() {
+					return false
+				}
+			});
+		});
+	});
+	$(document).ready(function(){
+		$(".web-view").hide(); 
+		$("button.reveal").click(function(){
+			$(this).toggleClass("active").next().slideToggle("fast");
+			if ($.trim($(this).text()) === 'Web View') {
+				$(".mob-app-view").hide(); 
+				$(this).text('Mobile App view');
+			} else {
+				$(this).text('Web View');
+				$(".mob-app-view").show(); 
+			}
+			return false;
+		});
+		getTiles();
+		$('#tile_icon_prev').hide();
+	});
+	
+
+	$('#addtile').on('hidden.bs.modal', function (e) {
+		$(this)
+		.find("input,textarea, radio")
+			.val('')
+			.end()
+		.find("input[type=checkbox], input[type=radio]")
+			.prop("checked", "")
+			.end();
+		$(this).find('#tile_active').prop("checked", true).val('true');
+		$(this).find('.modal-title').text('Add Tile')
+		$(this).find('#tile-submit').text('Submit')
+		$(this).find('#tile_icon_prev').html('');
+		$(this).find('#tile_select_url_type').val('native').attr('selected','selected');
+		$(this).find('#tile_select_page').val('');
+
+		
+		var form = $('#tile-form');
+		form.validate().resetForm();
+		form.find('.error').removeClass('text-danger');
+		form.find('.text-danger').removeClass('text-danger');
+	})	
+</script>
+	
+{% endblock %} 

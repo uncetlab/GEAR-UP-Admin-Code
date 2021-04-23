@@ -1,0 +1,6 @@
+*.log
+*.pyc
+*__pycache__/
+gearup/media/
+*migrations/
+gearup/gearup/settings.py

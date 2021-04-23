@@ -1,0 +1,46 @@
+{% load static %}
+<div class="col-md-12">
+	<button class="btn btn-add" data-toggle="modal" data-target="#addtile"><i class="fas fa-plus-circle"></i> Add Tile</button>
+	<small class="float-right pt-2 text-info"><i>Drag to change tile order</i></small>
+</div>	
+<div class="col-md-12 connected-sortable droppable-area1">
+	{% for tile in home_page.tiles.all %}
+		<div id="{{tile.uid}}" class="tile-wrap {% if not tile.active %}tile-disable{% endif %}  draggable-item">
+			<div class="tile-img">
+				<img src="{% if tile.image %}{{tile.image.url}}{% else %}#{% endif %}" alt=""/>
+			</div>
+			<div class="tile-title text-center">
+				{{tile.title}}
+			</div>
+			<div class="title-editbtn text-center">
+				<button class="btn btn-sm btn-outline-primary" onClick="editTile({{tile.to_json}})"><i class="far fa-edit"></i> Edit</button>
+				<button class="btn btn-sm btn-outline-danger tile-remove" onclick="deleteTile({'uid': '{{tile.uid}}','title': '{{tile.title}}'})"><i class="far fa-trash-alt"></i> Delete</button>
+			</div>
+		</div>
+	{% endfor %}
+</div>
+
+<script type="text/javascript">
+	$( init );
+	order = '{{old_order|safe}}'
+	var old_order = jQuery.parseJSON(order)
+	function init() {
+		$( ".droppable-area1" ).sortable({
+			connectWith: ".connected-sortable",
+			stack: '.connected-sortable',
+			stop: function (e, ui) {
+				var tile_order = {}
+				$(this).children("div").each(function (index) {
+					tile_order[$(this).attr('id')] = index+1
+				})
+				if (!(isEquivalent(tile_order, old_order))){
+					updateTileOrder(tile_order)
+				}
+			}
+		}).disableSelection();
+	}
+
+	$(document).ready(function() {
+		$('[data-tooltip="tooltip"]').tooltip();
+	});
+</script>

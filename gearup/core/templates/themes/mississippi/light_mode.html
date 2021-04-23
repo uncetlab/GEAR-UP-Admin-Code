@@ -1,0 +1,27 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<head>
+<link href="https://fonts.googleapis.com/css?family=Roboto:400,400i,700,700i&display=swap" rel="stylesheet">
+<style>
+h1, h2, h3, h4, h5, h6{color:#002750!important;}
+ul, li, strong, span, b, p, div{color:#000000!important;}
+a{color:#0d7df3!important;}
+img{max-width:100%!important;}
+</style>
+<title>Untitled Document</title>
+
+</head>
+
+<body style="background-color: #F6F6F6">
+<div class="ql-editor" style="background-color:#F3F3F3; color:#242424;">
+{% if content %}
+	{{content|safe}}
+{% endif %}
+{% if tile_html %}
+	{{ tile_html |safe}}
+{% endif %}
+</div>
+</body>
+</html>

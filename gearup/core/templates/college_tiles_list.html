@@ -1,0 +1,65 @@
+{% load static %}
+			<div class="col-md-12">				
+				<button type="button" class="btn btn-add" data-toggle="modal" data-target="#addtile"><i class="fas fa-plus-circle"></i> Add Tile</button>
+			</div>			
+			<div class="col-md-12">
+			{% if tiles %}
+				<div class="table-responsive">		
+				<table  id="manage_tiles"  class="table table-striped table-bordered mt-2 mb-2">
+
+						<tr>
+							<th>Order</th>
+							<th>Tile Name</th>
+							<th>Tile Icon</th>						
+							<th>Edit</th>
+							<th>Delete</th>
+						</tr>
+
+							{% for tile in tiles %}
+							<tr id="{{tile.uid}}">
+								<td>{{tile.order}}</td>
+								<td>{{tile.title}}</td>
+								<td><img  height="35" src="{% if tile.image %}{{tile.image.url}}{% else %}#{% endif %}" alt=""/></td>
+								<td><a href="#"  onClick="editTile({{tile.to_json}})" class="text-success" data-tooltip="tooltip"><i class="far fa-edit"></i></a></td>
+								<td><a href="#" onclick="deleteTile({'uid': '{{tile.uid}}','title': '{{tile.title}}'})" class="text-danger"><i class="far fa-trash-alt"></i></a></td>
+							</tr>
+							{% endfor %}
+					
+				</table>
+			</div>
+			{% else %}
+				<small class="ml-auto pt-3 text-info"><i>Sorry no results found.</i></small>
+			{% endif %}
+			</div>
+
+
+<script type="text/javascript">
+
+	$(document).ready(function() {
+		order = '{{old_order|safe}}'
+		var old_order = jQuery.parseJSON(order)
+		$("#manage_tiles").sortable({
+			items: 'tr:not(tr:first-child)',
+			cursor: 'pointer',
+			axis: 'y',
+			dropOnEmpty: false,
+			start: function (e, ui) {
+				ui.item.addClass("selected");
+			},
+			stop: function (e, ui) {
+				var tile_order = {}
+				ui.item.removeClass("selected");
+				$(this).find("tr").each(function (index) {
+					if (index > 0) {
+						$(this).find("td").eq(0).html(index);
+						tile_order[$(this).closest('tr').attr('id')] = index
+					}
+				});
+
+				if (!(isEquivalent(tile_order, old_order))){
+					updateTileOrder(tile_order)
+				}
+			}
+		});
+	});
+</script>

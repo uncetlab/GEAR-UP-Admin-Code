@@ -1,0 +1,52 @@
+
+{% extends 'superadmin/base.html' %} 
+
+{% load static %}
+{% block title %}Manage Log{% endblock %}
+
+{% block content %}
+	<div class="container content-wrap">
+		<div id="logs_list"></div>
+	</div>
+	<!-- </div> -->
+
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+<script src="{% static 'js/BsMultiSelect.js' %}"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<script type="text/javascript">
+	var params = {};
+	$(document).ready(function() {
+		getLogs()
+	});
+
+	function getLogs(){
+		$.ajax({
+			type: 'GET',
+			success: function(data){
+				$('#logs_list').html(data);
+			}
+		});
+	};
+
+	function getPaginate(page_number){
+		params['page'] = page_number
+		$.ajax({
+			type: "GET",
+			url: '/manage_logs/?' + $.param(params),
+			success: function(data) {
+				$('#logs_list').html(data);
+			}
+		})	
+	};
+
+
+
+</script>
+
+{% endblock %} 

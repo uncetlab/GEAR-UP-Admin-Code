@@ -1,0 +1,294 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Manage Majors{% endblock %}
+{% block content %}
+
+	<div class="container content-wrap">
+		<div class="row pagetitle">
+			<div class="col-md-12">
+				<h1>Manage Majors </h1> <button class="btn btn-add" data-toggle="modal" data-target="#addmajor"><i class="fas fa-plus-circle"></i> Add Majors</button> 
+				{# <button class="btn btn-info" data-tooltip="tooltip" title="Multiple Majors adding by uploading CSV file"><i class="fas fa-arrow-circle-up"></i> Upload CSV</button> #}
+			</div>
+		</div>
+		{# Majors list #}
+		<div id="majors_list"></div>
+	
+	</div>
+	{{ colleges|json_script:"colleges" }}
+	
+	<!-- The Modal -->
+	<div class="modal" id="addmajor">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<form id="major-form" action="" method="post">
+					{% csrf_token %}
+					<!-- Modal Header -->
+					<div class="modal-header">
+						<h4 class="modal-title">Add Majors</h4>
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+					</div>
+
+					<!-- Modal body -->
+					<div class="modal-body">
+						<input type="hidden" id="uid" name="uid">
+						<div class="row">
+							<div class="col-md-5">
+								<label>Major Title</label>
+								<input type="text" placeholder="Required Field" name="title" id="major_title" class="form-control" />
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-md-12">
+								<label>Description</label>
+								<textarea name="description" id="major_description" class="form-control" ></textarea>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-md-12">
+								<label>Status</label><br/>
+								<label class="radio-inline"><input id="major_active" checked="true" type="radio" name="active" value="true" >Active</label>
+								<label class="radio-inline"><input id="major_deactive" type="radio" name="active" value="false">Inactivate</label>
+							</div>
+						</div>
+
+						<div class="row">
+							<div id="select_colleges" class="col-md-12">
+								<label>Select Colleges</label>
+								<select id="multi_select_colleges" class="selectmajors form-control" multiple data-placeholder="You can select multiple Colleges" style="display: none;">
+									{% for college in colleges %}
+										<option value="{{college.uid}}">{{college.name}}</option>
+									{% endfor %}
+								</select>
+							</div>
+						</div>
+					</div>
+
+					<!-- Modal footer -->
+					<div class="modal-footer">
+						<button id="submit" type="submit" class="btn btn-primary">Submit</button>
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	
+{% endblock %} 
+{% block scripts %}
+{{ block.super }}
+<script src="{% static 'js/BsMultiSelect.js' %}"></script>
+<script>
+	var params = {}
+	$(document).ready(function() {
+		getMajors()
+    	$('[data-tooltip="tooltip"]').tooltip();
+	});
+
+	function getMajors(){
+		$.ajax({
+			type: 'GET',
+			url: '/manage_majors/?' +  $.param(params),
+			success: function(data){
+				$('#majors_list').html(data);
+			}
+		});
+	};
+
+	function editMajor(major) {
+		$('#major_deactive').val('false');
+		$('#major_active').val('true');
+		var modal = $('#addmajor');
+		modal.find('#uid').val(major.uid);
+		modal.find('#major_title').val(major.title);
+		modal.find('.modal-title').text('Edit Major')
+		modal.find('#submit').text('Update')
+
+		if(major.state == 'true'){
+			modal.find('#major_active').prop("checked", true);
+		}else{
+			modal.find('#major_deactive').prop("checked", true);
+		}
+		modal.find('#major_description').val(major.description);
+		// console.log(major.colleges.split(","));
+		html = '<label>Select Colleges</label><select id="multi_select_colleges" class="selectmajors form-control" multiple data-placeholder="You can select multiple Colleges" style="display: none;">'
+		
+
+		colleges = JSON.parse(document.getElementById('colleges').textContent);
+		$.each(colleges, function(i,e){
+			if (major.colleges.indexOf(e.uid) != -1){
+
+			html += '<option value=' + e.uid + ' selected>' +e.name + '</option>'
+			}
+			else{
+				html += '<option value=' + e.uid + '>' +e.name + '</option>'
+			}
+		});
+		html += '</select>'
+		modal.find('#select_colleges').html(html);
+		$("select.selectmajors").bsMultiSelect();
+
+		modal.modal('show');
+
+	};
+
+	function getPaginate(page_number){
+		params['page'] = page_number
+			
+		$.ajax({
+			type: "GET",
+			url: '/manage_majors/?' +  $.param(params),
+			success: function(data) {
+				$('#majors_list').html(data);
+			}
+		})	
+	};
+
+	function bulkDelete(){
+		var ids = []
+		$("#manage_major input[type=checkbox]:checked").each(function () {
+			if ($(this).attr('id')){
+				ids.push($(this).attr('id'))
+			}
+        });
+        swal({
+			title: "<h3>Are you sure you want to delete these selected majors'?</h3>",
+			html: "title",
+			text: "Delete Confirmation?",
+			type: "warning",
+			showCancelButton: true,
+			confirmButtonColor: "#DD6B55",
+			confirmButtonText: "Delete",
+			closeOnConfirm: false
+		},
+		function() {
+			var data = {'multiple_uids':  ids, 'bulkDelete':  true, 'csrfmiddlewaretoken': '{{ csrf_token }}'};
+			$.ajax({
+				type: "POST",
+				url: '/manage_majors/',
+				data: data,
+				success: function(data) {}
+			})
+			.done(function(data) {
+				getMajors();
+				swal("Deleted!", "Majors successfully Deleted!", "success");
+			})
+		});
+	}
+
+	function deleteMajor(major){
+		if (major.colleges){
+			title = '<h3>This major is associated with following colleges<br><small class="ml-auto pt-2 text-info"><i><h6 class="majdelete">' + major.colleges + '</h6></i></small></h3>'
+		}
+		else{
+			title = "<h3>Are you sure you want to delete this major '" + major.title +"'?</h3>"
+		}
+		swal({
+			
+			title: title,
+			html: title, 
+			text: "Delete Confirmation?",
+			type: "warning",
+			showCancelButton: true,
+			confirmButtonColor: "#DD6B55",
+			confirmButtonText: "Delete",
+			closeOnConfirm: false
+		},
+		function() {
+			params["uid"] = major.uid
+			$.ajax({
+				type: "DELETE",
+				url: '/manage_majors/?' +  $.param(params),
+				success: function(data) {}
+			})
+			.done(function(data) {
+				getMajors();
+				swal("Deleted!", "Major successfully Deleted!", "success");
+			})
+		});
+	}
+
+	$(function(){
+		$("select.selectmajors").bsMultiSelect();
+
+		$("#major-form").validate({
+    		rules: {
+        		title: {
+        			required: true,
+                }
+            },
+    		messages: {
+            	title: {
+           			required: "Title is Mandatory.",                  
+                }
+            },
+            errorClass: "text-danger",
+     	});
+
+		$('#major-form').on('submit', function(e){
+			e.preventDefault();
+
+			$("#major-form").validate()
+
+
+			if (!$("#major-form").valid()) return false;
+
+			var title = $('#major_title').val();
+			var uid = $('#uid').val();
+			var selectedValueArray= []; 
+			$('#select_colleges :selected').each(function(i, selected){ 
+  				selectedValueArray[i] = $(selected).val(); 
+			});
+			var formData = new FormData(this);
+			formData.append('csrfmiddlewaretoken', '{{ csrf_token }}')
+			formData.append('colleges', selectedValueArray)
+
+			if (uid){
+				message = title +'" successfully updated.'
+			}else{
+				message = title +'" successfully added.'
+			}
+			$.ajax({
+				type: 'POST',
+				data: formData,
+				contentType: false,
+				processData: false,
+				success: function(data){
+					getMajors();
+					$('#addmajor').modal('toggle');
+					$("#alert_div").addClass("alert alert-success");
+					bootstrap_alert.warning('<strong>Success!</strong> Major"' + message)
+				}
+			});
+		});
+	});
+
+	$('#addmajor').on('hidden.bs.modal', function (e) {
+	  	$(this)
+			.find("input,textarea, radio")
+				.val('')
+				.end()
+			.find("input[type=checkbox], input[type=radio]")
+				.prop("checked", "")
+				.end();
+
+		$('#select_colleges :selected').each(function(i, selected){ 
+			$(selected).removeProp('selected')
+			var span = s = $("span:contains("+ $(selected).text() +")")
+			span.next('button').click();
+		});
+
+		$(this).find('#major_active').prop("checked", true).val('true');
+		$(this).find('.modal-title').text('Add Major')
+		$(this).find('#submit').text('Submit')
+
+		var form = $('#major-form');
+    	form.validate().resetForm();
+    	form.find('.error').removeClass('text-danger');
+    	form.find('.text-danger').removeClass('text-danger');
+    	$("select.selectmajors").bsMultiSelect();
+
+	})
+</script>
+{% endblock %} 
