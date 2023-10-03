@@ -1,4 +1,4 @@
-#  GEARUP and its sub-projects
+# GEARUP and its sub-projects
 
 This guide provides details about the project GEARUP and its sub-projects
 
