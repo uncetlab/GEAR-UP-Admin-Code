@@ -1,4 +1,4 @@
-# Running Django Project with Docker Compose
+#  GEARUP and its sub-projects
 
 This guide provides details about the project GEARUP and its sub-projects
 
