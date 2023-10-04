@@ -36,5 +36,5 @@ The native android app code is developed with KOTLIN language which can be found
 
 ## 3. API service
 
-API service is the key life of all the mobile/web applications without API the mobile/web application won't move a page. The core is developed with python and Django as a framework and uses django templates for frontend, also the api is developed with DRF (django rest framework) powered by mysql as the database. the code base for admin [repository](https://github.com/uncetlab/GEAR-UP-Admin-Code.git) the web application can be found at [web-admin-app](https://www.gearupapp.org/) which is also the home page of gearupapp.org
+API service is the key life of all the mobile/web applications without API the mobile/web application won't move a page. The core is developed with python and Django as a framework and uses django templates for frontend, also the api is developed with DRF (django rest framework) powered by Postgresql as the database. the code base for admin [repository](https://github.com/uncetlab/GEAR-UP-Admin-Code.git) the web application can be found at [web-admin-app](https://www.gearupapp.org/) which is also the home page of gearupapp.org
 
