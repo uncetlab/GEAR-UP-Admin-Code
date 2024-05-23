@@ -324,4 +324,3 @@ The `Career` model in this Django project represents careers and their associate
 - `active_tiles`: Returns active tiles associated with the career.
 
 The `Career` model stores information about careers and their associated data, such as contact details, content, and related tiles.
-

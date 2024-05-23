@@ -2,8 +2,8 @@
 
 from django import forms
 from django.contrib.auth.models import User
-from core.models import Menu, Tile, CustomPage, College, UniversityProfile,\
-    Career
+
+from core.models import Career, College, CustomPage, Menu, Tile, UniversityProfile
 
 
 class LoginForm(forms.Form):
@@ -15,14 +15,14 @@ class LoginForm(forms.Form):
     def clean(self):
         """Form Validations."""
         cleaned_data = super().clean()
-        email = cleaned_data.get('email')
-        password = cleaned_data.get('password')
+        email = cleaned_data.get("email")
+        password = cleaned_data.get("password")
         if not User.objects.filter(email__iexact=email).exists():
-            self.add_error('email', 'Invalid Username')
+            self.add_error("email", "Invalid Username")
         else:
             user = User.objects.get(email__iexact=email)
             if not user.check_password(password):
-                self.add_error('password', 'Invalid credentials')
+                self.add_error("password", "Invalid credentials")
 
 
 class MenuForm(forms.ModelForm):
@@ -32,8 +32,7 @@ class MenuForm(forms.ModelForm):
         """Field details."""
 
         model = Menu
-        fields = ('title', 'url_type', 'active', 'icon',
-                  'url', 'page', 'key_name')
+        fields = ("title", "url_type", "active", "icon", "url", "page", "key_name")
 
 
 class TileForm(forms.ModelForm):
@@ -45,8 +44,7 @@ class TileForm(forms.ModelForm):
         """Field details."""
 
         model = Tile
-        fields = ('title', 'url_type', 'active', 'image',
-                  'url', 'page', 'description')
+        fields = ("title", "url_type", "active", "image", "url", "page", "description")
 
 
 class PageForm(forms.ModelForm):
@@ -58,7 +56,7 @@ class PageForm(forms.ModelForm):
         """Field details."""
 
         model = CustomPage
-        fields = ('title', 'content', 'active')
+        fields = ("title", "content", "active")
 
 
 class CollegeForm(forms.ModelForm):
@@ -68,7 +66,7 @@ class CollegeForm(forms.ModelForm):
         """Form meta class."""
 
         model = College
-        exclude = ('tiles',)
+        exclude = ("tiles",)
 
 
 class UniversityForm(forms.ModelForm):
@@ -78,8 +76,7 @@ class UniversityForm(forms.ModelForm):
         """Field details."""
 
         model = UniversityProfile
-        fields = ('name', 'address', 'email', 'logo',
-                  'phone_number')
+        fields = ("name", "address", "email", "logo", "phone_number")
 
 
 class CareerForm(forms.ModelForm):
@@ -89,4 +86,4 @@ class CareerForm(forms.ModelForm):
         """Form meta class."""
 
         model = Career
-        exclude = ('tiles',)
+        exclude = ("tiles",)

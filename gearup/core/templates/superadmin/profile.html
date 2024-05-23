@@ -1,5 +1,5 @@
 
-{% extends base_template %} 
+{% extends base_template %}
 
 {% load static %}
 {% block title %}Manage College{% endblock %}
@@ -8,7 +8,7 @@
 	<div class="container content-wrap">
 		<div class="row pagetitle">
 			<div class="col-md-12">
-				<h1>Profile</h1> 
+				<h1>Profile</h1>
 			</div>
 		</div>
 		<div class="row">
@@ -59,7 +59,7 @@
 						<input id="old_password" name="old_password" type="text" class="form-control"  required="true" />
 					</div>
 				</div>
-				<div class="row">	
+				<div class="row">
 					<div class="col-md-10">
 						<p class="newpwdhint">
 							<label>New password <i class="fas fa-info-circle helptext1 text-danger ml-2"></i></label>
@@ -83,7 +83,7 @@
 			</div>
 		</div>
 	</div>
-	{% endblock %} 
+	{% endblock %}
 {% block scripts %}
 {{ block.super }}
 <script src="{% static 'js/jquery.password-validation.js' %}"></script>
@@ -134,10 +134,10 @@
 			},
 			messages: {
 				old_password: {
-					required: "Please enter current password.",                  
+					required: "Please enter current password.",
 				},
 				new_password: {
-					required: "Please enter a valid password.",                  
+					required: "Please enter a valid password.",
 				},
 				url:{
 					required: "Please enter same password."
@@ -180,7 +180,7 @@
 </script>
  <script>
 $(document).ready(function(){
-  $('.helptext1').tooltip({title: "<ul><li>Your password cant be too similar to your other personal information.</li><li>Your password must contain at least 12 characters.</li><li>Your password cant be a commonly used password.</li><li>Your password cant be entirely numeric.</li></ul>", html: true, placement: "right"}); 
+  $('.helptext1').tooltip({title: "<ul><li>Your password cant be too similar to your other personal information.</li><li>Your password must contain at least 12 characters.</li><li>Your password cant be a commonly used password.</li><li>Your password cant be entirely numeric.</li></ul>", html: true, placement: "right"});
 });
 </script>
-{% endblock %} 
+{% endblock %}

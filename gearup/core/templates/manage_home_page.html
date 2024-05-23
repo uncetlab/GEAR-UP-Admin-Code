@@ -48,7 +48,7 @@
 				<!-- Modal body -->
 				<div class="modal-body">
 					<input type="hidden" id="uid" name="uid">
-					<div id="tile_icon_prev" class="row">				
+					<div id="tile_icon_prev" class="row">
 					</div>
 					<div class="row">
 						<div class="col-md-12">
@@ -75,7 +75,7 @@
 								<option value="native">Custom Pages</option>
 								<option value="external">External</option>
 							</select>
-						</div>					
+						</div>
 					</div>
 					<div class="row">
 						<div class="col-md-12" class="row mb-0">
@@ -91,7 +91,7 @@
 							<input type="text" name="image_url" style="display: none" id="image_url">
 						</div>
 					</div>
-						
+
 					<div class="row">
 						<div class="col-md-12">
 							<label>Tile Status</label><br/>
@@ -134,7 +134,7 @@
 								<ul class="mr-auto links">
 									<li class="nav-item active"> <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a> </li>
 									<li class="nav-item"> <a class="nav-link" href="#">MS College</a> </li>
-									<li class="nav-item"> <a class="nav-link" href="#">Disability Access </a> </li> 
+									<li class="nav-item"> <a class="nav-link" href="#">Disability Access </a> </li>
 								</ul>
 								<button><i class="fas fa-ellipsis-h"></i></button>
 								<ul class="hidden-links hidden"></ul>
@@ -190,7 +190,7 @@
 							<h1>Home</h1>
 						</div>
 						<div class="preview-content-wrap">
-							<div class="preview-content">							
+							<div class="preview-content">
 								<div class="preview-video" id="preview_video">
 									<div class="preview-video-title">
 									360 : Gear Up NC VR Introduction
@@ -253,8 +253,8 @@
 		</div>
 	</div>
 </div>
-{% endblock %} 
-	
+{% endblock %}
+
 {% block scripts %}
 {{ block.super }}
 
@@ -269,15 +269,15 @@
     		}).disableSelection();
 		}
 
-		$(".web-view").hide(); 
+		$(".web-view").hide();
 		$("button.reveal").click(function(){
 			$(this).toggleClass("active").next().slideToggle("fast");
 			if ($.trim($(this).text()) === 'Web View') {
-				$(".mob-app-view").hide(); 
+				$(".mob-app-view").hide();
 				$(this).text('Mobile App view');
 			} else {
 				$(this).text('Web View');
-				$(".mob-app-view").show(); 
+				$(".mob-app-view").show();
 			}
 			return false;
 		});
@@ -342,7 +342,7 @@
 			}
 		});
 
-		
+
 	});
 
 	var _URL = window.URL || window.webkitURL;
@@ -350,7 +350,7 @@
 		var file, img;
 		var maxwidth = 375;
 		var maxheight = 211;
-		
+
 		if ((file = this.files[0])) {
 			img = new Image();
 			img.onload = function () {
@@ -361,7 +361,7 @@
 			};
 			img.src = _URL.createObjectURL(file);
 		}
-		
+
 	});
 
 	function editTile(tile) {
@@ -413,7 +413,7 @@
 		$('#tile_icon_prev').html('');
 		$('#image_url').val('');
 	}
-	
+
 	function getTiles(){
 		$.ajax({
 			type: 'GET',
@@ -476,10 +476,10 @@
             },
     		messages: {
             	title: {
-           			required: "Please enter tile title.",                  
+           			required: "Please enter tile title.",
                 },
                 page: {
-           			required: "Please select a valid page from choices.",                  
+           			required: "Please select a valid page from choices.",
                 },
                 url:{
                 	required: "Please provide a valid external url, with prefix 'http://'."
@@ -573,7 +573,7 @@
 							<img src="/'+tile_image_url+'" class="mw-100" /><div class="tile-title p-1">\
 							'+tile.title+'</div></div><p class="p-2">'+description+'</p></a>'
 					}
-					
+
 					modal.find('#preview_video').html(video_html);
 					modal.find('#college_web_preview_video').html(web_video_html);
 
@@ -586,7 +586,7 @@
 		});
 
 
-		
+
 	});
 
 
@@ -608,7 +608,7 @@
 		$(this).find('#tile_select_page').val('');
 		$(this).find('#tile_url_span').hide();
 
-		
+
 		var form = $('#tile-form');
     	form.validate().resetForm();
     	form.find('.error').removeClass('text-danger');
@@ -618,4 +618,4 @@
 </script>
 
 
-{% endblock %} 
+{% endblock %}

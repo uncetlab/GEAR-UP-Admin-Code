@@ -1,0 +1,7 @@
+#!/Users/egmarie/Desktop/DEV/GEAR-UP-Admin-Code/gearup/venv/bin/python3.11
+
+import warnings
+warnings.simplefilter('default', DeprecationWarning)
+
+from logilab.common.pytest import run
+run()

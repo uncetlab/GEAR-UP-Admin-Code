@@ -125,12 +125,12 @@ input.reqfld::placeholder {font-size:11px; }
   width: 90%;
 }
 
-.draggable-item { 
- 
+.draggable-item {
+
   -webkit-transition: transform .25s ease-in-out;
   -moz-transition: transform .25s ease-in-out;
   -o-transition: transform .25s ease-in-out;
-  transition: transform .25s ease-in-out;  
+  transition: transform .25s ease-in-out;
   -webkit-transition: box-shadow .25s ease-in-out;
   -moz-transition: box-shadow .25s ease-in-out;
   -o-transition: box-shadow .25s ease-in-out;
@@ -138,8 +138,8 @@ input.reqfld::placeholder {font-size:11px; }
 
 .draggable-item:hover {
     cursor: pointer;
-   
-  
+
+
 }
 
 .draggable-item.ui-sortable-helper {
@@ -1220,13 +1220,13 @@ table.dataTable{clear:both;margin-top:6px !important;margin-bottom:6px !importan
   display: inline-block;
   background: -webkit-linear-gradient(top, #f9f9f9, #e3e3e3);
   border: 1px solid #999;
-  
+
   padding: 5px 8px;
   outline: none;
   white-space: nowrap;
   -webkit-user-select: none;
   cursor: pointer;
-  text-shadow: 1px 1px #fff; 
+  text-shadow: 1px 1px #fff;
   font-size: 14px;
 }
 .custom-file-replace-input:hover::before {
@@ -1236,7 +1236,7 @@ table.dataTable{clear:both;margin-top:6px !important;margin-bottom:6px !importan
   outline: 0;
 }
 .custom-file-replace-input:active::before {
-  background: -webkit-linear-gradient(top, #e3e3e3, #f9f9f9); 
+  background: -webkit-linear-gradient(top, #e3e3e3, #f9f9f9);
 }
 .modal {
   overflow-y:auto;
@@ -1277,7 +1277,7 @@ table.dataTable{clear:both;margin-top:6px !important;margin-bottom:6px !importan
   height: 28px;
 }
 
-.switch input { 
+.switch input {
   opacity: 0;
   width: 0;
   height: 0;
@@ -1383,7 +1383,7 @@ input:checked + .slider:before {
     display: flex;
     font-size: .75rem;
     height: 30px;
-    
+
     border-radius: .25rem;
 }
 

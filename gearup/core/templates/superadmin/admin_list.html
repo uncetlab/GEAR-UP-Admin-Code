@@ -30,13 +30,13 @@
 							<th>Email</th>
 							<th>Verified</th>
 							<th>Universitiies</th>
-							<th>Status</th>							
+							<th>Status</th>
 							<th>Edit</th>
 							<th>Delete</th>
 						</tr>
 					</thead>
 					<tbody>
-				
+
 					{% for admin in admins %}
 					<tr id="{{admin.uid}}">
 						<td>{% firstof admin.user.get_full_name admin.user.username %}</td>
@@ -47,7 +47,7 @@
 								<a href="#"  onClick="resendVerification('{{admin.user.email}}')" class="text-success" data-tooltip="tooltip">Resend link</a>
 						{% endif %}</td>
 						<td>{{admin.formatted_universities}}</td>
-						<td class="text-{% if admin.active %}success{% else %}warning{% endif %}">{% if admin.active %}Active{% else %}Inactive{% endif %}</td>						
+						<td class="text-{% if admin.active %}success{% else %}warning{% endif %}">{% if admin.active %}Active{% else %}Inactive{% endif %}</td>
 						<td><a href="#"  onClick="editadmin({{admin.to_json}})" class="text-success" data-tooltip="tooltip"><i class="far fa-edit"></i></a></td>
 						<td><a href="#" onclick="deleteAdmin({'uid': '{{admin.uid}}','name': '{% firstof admin.user.get_full_name admin.user.username %}'})" class="text-danger"><i class="far fa-trash-alt"></i></a></td>
 					</tr>
@@ -94,7 +94,7 @@
 		{% endif %}
 	</ul>
 		</div>
-	</div>			
+	</div>
 </div>
 </div>
 
@@ -110,7 +110,7 @@
 				success: function(data) {
 					$('#admin_list').html(data);
 				}
-			})	
+			})
 		});
 
 		$("#autoCompInput").bind("keypress", {}, keypressInBox);
@@ -121,7 +121,7 @@
 		});
 			function keypressInBox(e) {
     			var code = (e.keyCode ? e.keyCode : e.which);
-    			if (code == 13) { //Enter keycode                        
+    			if (code == 13) { //Enter keycode
         			e.preventDefault();
         			$.ajax({
 						type: "GET",
@@ -131,7 +131,7 @@
 						}
 					})
     			}
-    
+
 		};
 	});
 </script>

@@ -71,13 +71,13 @@ CKEDITOR.plugins.add( 'html5video', {
                     if ( loop ) {
                         this.setData( 'loop', 'yes' );
                     }
-								
+
                     if ( advisorytitle ) {
                         this.setData( 'advisorytitle', advisorytitle );
                     }
-		
+
                     if ( responsive ) {
-                        this.setData( 'responsive', responsive );	
+                        this.setData( 'responsive', responsive );
                     }
 
                     if (controls) {
@@ -117,7 +117,7 @@ CKEDITOR.plugins.add( 'html5video', {
                             this.element.getChild( 0 ).removeStyle( 'height' );
                     }
 
-                    if (this.data.poster) this.element.getChild( 0 ).setAttribute('poster', this.data.poster);								
+                    if (this.data.poster) this.element.getChild( 0 ).setAttribute('poster', this.data.poster);
                 }
 
                 this.element.removeStyle( 'float' );

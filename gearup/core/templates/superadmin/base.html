@@ -21,7 +21,7 @@
 		<span class="navbar-toggler-icon"></span>
 	  </button>
 
-	  <div class="collapse navbar-collapse" id="navbarSupportedContent">	
+	  <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
 	  	<ul class="navbar-nav mr-auto">
 		  <li class="nav-item active">
@@ -35,8 +35,8 @@
 		  </li>
 		  <li class="nav-item">
 			<a class="nav-link {% if request.resolver_match.url_name == 'manage-logs' %}active{% endif %}" href="{% url 'manage-logs' %}">Activities log</a>
-		  </li>	
-		
+		  </li>
+
 		</ul>
 
 		   <div class="nav-item dropdown form-inline my-2 my-lg-0 ml-auto">
@@ -44,20 +44,20 @@
 			  {{request.user.get_full_name}}
 			</a>
 			<div class="dropdown-menu  dropdown-menu-right" aria-labelledby="navbarDropdown">
-			  <a class="dropdown-item" href="{% url 'edit-profile' %}">Change Password</a>			
+			  <a class="dropdown-item" href="{% url 'edit-profile' %}">Change Password</a>
 			  <div class="dropdown-divider"></div>
 			  <a class="dropdown-item text-danger" href="/logout/">Logout</a>
 			</div>
 		  </div>
-		
+
 	  </div>
 
-	</nav>	
+	</nav>
 
 	<div id="alert_div">
 	</div>
 
-	
+
 	<div class="preloaderarea">
     	<img src="{% static 'images/spinner1.svg' %}" alt="Loading"/>
     </div>
@@ -67,8 +67,8 @@
 
 </div>
 
-<div class="gearup-footer text-center">		
-			Powered by <a href="https://www.marlabs.com/" target="_blank">Marlabs</a>		
+<div class="gearup-footer text-center">
+			Powered by <a href="https://www.marlabs.com/" target="_blank">Marlabs</a>
 	</div>
 {% block scripts %}
 
@@ -81,7 +81,7 @@
 <script src="{% static 'js/jquery.validate.min.js' %}"></script>
 <script type="text/javascript">
 
-	
+
 
 	$(document)
           .ajaxStart(function () {

@@ -27,7 +27,7 @@ function verifyFileFormat(file){
         case 'png':
         case 'gif':
         case 'jpeg':
-            return file  
+            return file
         case 'mov':
         case 'mp4':
           return file
@@ -97,7 +97,7 @@ s3upload.start = function(fileItem, replaceVideoId) {
         s3upload.policyData = policyData
         fileKey = policyData.file_bucket_path;
         bucket = policyData.bucket
-        startTime = new Date();            
+        startTime = new Date();
 
         AWS.config = new AWS.Config();
         AWS.config.update({
@@ -171,9 +171,9 @@ s3upload.fileUploadComplete = function(fileItem, policyData){
             contentUid = $("#obj_id").val() || undefined
             s3upload.fileItemList.splice( $.inArray(fileItem, s3upload.fileItemList), 1 );
             setTimeout(function(){ stateChange(contentUid) }, 2000);
-            
+
         },
-        error: function(jqXHR, textStatus, errorThrown){ 
+        error: function(jqXHR, textStatus, errorThrown){
             alert("An error occured, please refresh the page.")
         }
     })
@@ -186,7 +186,7 @@ s3upload.displayItems = function(fileItemList){
         var item = obj.file
         var id_ = obj.id
         var order_ = obj.order
-        var html_ = "<div id=\"progress_bar\" class=\"progress\">" + 
+        var html_ = "<div id=\"progress_bar\" class=\"progress\">" +
           "<div class=\"progress-bar bg-success\" role=\"progressbar\" style='width:" + item.progress + "%' aria-valuenow='" + item.progress + "' aria-valuemin=\"0\" aria-valuemax=\"100\"></div></div>"
         itemList.append("<div>" + item.name + "<br/>" + html_ + "</div><hr/>")
 
@@ -229,7 +229,7 @@ s3upload.onProgressChanged = function(uploadedSize, totalSize, speed) {
         var itemList = $('.item-loading-queue')
         itemList.html("")
 
-        var html_ = "<div id=\"progress_bar\" class=\"progress\">" + 
+        var html_ = "<div id=\"progress_bar\" class=\"progress\">" +
           "<div class=\"progress-bar bg-success\" role=\"progressbar\" style='width:" + progress
           + "%' aria-valuenow='" + progress + "' aria-valuemin=\"0\" aria-valuemax=\"100\">"
           + s3upload.getReadableFileSizeString(uploadedSize)+" / "+s3upload.getReadableFileSizeString(totalSize)
@@ -272,7 +272,7 @@ s3upload.uploadPart =  function(s3, multipart, partParams, tryNum) {
             PartNumber: Number(this.request.params.PartNumber)
         };
         console.log("Completed part", this.request.params.PartNumber);
-        
+
         if (--numPartsLeft > 0) return; // complete only when all parts uploaded
 
         var doneParams = {
@@ -295,14 +295,14 @@ s3upload.uploadPart =  function(s3, multipart, partParams, tryNum) {
                 if (time_diff > 0.005) // 5 miliseconds has passed
                 {
                     var byte_rate = (s3upload.loaded[partNum] -s3upload.lastUploadedSize[partNum])/time_diff;
-                    s3upload.byterate[s3upload.partNum] = byte_rate; 
+                    s3upload.byterate[s3upload.partNum] = byte_rate;
                     s3upload.lastUploadedTime[partNum]=new Date().getTime();
                     s3upload.lastUploadedSize[partNum]=s3upload.loaded[partNum];
                 }
             }
-            else 
+            else
             {
-                s3upload.byterate[partNum] = 0; 
+                s3upload.byterate[partNum] = 0;
                 s3upload.lastUploadedTime[partNum]=new Date().getTime();
                 s3upload.lastUploadedSize[partNum]=s3upload.loaded[partNum];
             }
@@ -315,5 +315,3 @@ s3upload.uploadPart =  function(s3, multipart, partParams, tryNum) {
         // event is related to and use that info to calculate overall progress.
     });
 }
-
-

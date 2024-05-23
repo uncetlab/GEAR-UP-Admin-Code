@@ -25,8 +25,8 @@
       <ul class="navbar-nav mr-auto">
         <li class="nav-item">
       <a class="nav-link border border-success rounded shadow-sm " href="{% url 'admin-dashboard' %}"> <i class="fas fa-tachometer-alt"></i> Uniconsole admin</a>
-      </li> 
-    
+      </li>
+
     </ul>
     {% endif %}
        <div class="nav-item dropdown form-inline my-2 my-lg-0 ml-auto">
@@ -34,14 +34,14 @@
         {{request.user.get_full_name}}
       </a>
       <div class="dropdown-menu  dropdown-menu-right" aria-labelledby="navbarDropdown">
-        <a class="dropdown-item" href="{% url 'edit-profile' %}">Change Password</a>      
+        <a class="dropdown-item" href="{% url 'edit-profile' %}">Change Password</a>
         <div class="dropdown-divider"></div>
         <a class="dropdown-item text-danger" href="/logout/">Logout</a>
       </div>
       </div>
-    
+
     </div>
-  </nav>  
+  </nav>
 
   <div class="container content-wrap">
     <div class="box-wrap">
@@ -80,7 +80,7 @@
               <h2>Manage Home Page</h2>
             </div>
           </a>
-        </div>    
+        </div>
         <div class="col-md-3">
           <a href="{% url 'manage-custom-page' %}">
             <div class="boxarea">
@@ -93,7 +93,7 @@
         </div>
         <div class="col-md-3">
           <a href="{% url 'manage-colleges' %}">
-          
+
             <div class="boxarea">
               <div class="imgarea">
               <img src="{% static 'images/manage-college.png' %}" alt="manage college" />
@@ -126,10 +126,10 @@
     </div>
   </div>
 </div>
-<div class="gearup-footer text-center">   
-      Powered by <a href="https://www.marlabs.com/" target="_blank">Marlabs</a>   
+<div class="gearup-footer text-center">
+      Powered by <a href="https://www.marlabs.com/" target="_blank">Marlabs</a>
   </div>
-  
+
 <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
 <script src="{% static 'js/popper.min.js' %}"></script>
 <script src="{% static 'js/bootstrap.min.js' %}"></script>

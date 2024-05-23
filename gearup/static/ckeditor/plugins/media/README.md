@@ -17,8 +17,8 @@ The resulting HTML for an image with a caption will be p.e.
 
 If you provide a browser implementation that uses one of the following browser APIs the _Browse server_ button will appear:
 
-1. [browser](https://ckeditor.com/cke4/addon/browser) 
-2. [mediabrowser](https://ckeditor.com/cke4/addon/mediabrowser) 
+1. [browser](https://ckeditor.com/cke4/addon/browser)
+2. [mediabrowser](https://ckeditor.com/cke4/addon/mediabrowser)
 3. [filebrowser](https://ckeditor.com/cke4/addon/filebrowser)
 
 **This widget itself does not provide any browser!**

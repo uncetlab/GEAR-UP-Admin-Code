@@ -90,7 +90,7 @@
 		{% endif %}
 	</ul>
 		</div>
-	</div>			
+	</div>
 </div>
 </div>
 
@@ -115,7 +115,7 @@
 				success: function(data) {
 					$('#school_list').html(data);
 				}
-			})	
+			})
 		});
 
 		$("#autoCompInput").bind("keypress", {}, keypressInBox);
@@ -126,7 +126,7 @@
 		});
 			function keypressInBox(e) {
     			var code = (e.keyCode ? e.keyCode : e.which);
-    			if (code == 13) { //Enter keycode                        
+    			if (code == 13) { //Enter keycode
         			e.preventDefault();
         			params['query'] = $("#autoCompInput").val()
         			$.ajax({
@@ -137,7 +137,7 @@
 						}
 					})
     			}
-    
+
 		};
 	});
 </script>

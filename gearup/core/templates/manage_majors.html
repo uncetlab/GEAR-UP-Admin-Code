@@ -6,16 +6,16 @@
 	<div class="container content-wrap">
 		<div class="row pagetitle">
 			<div class="col-md-12">
-				<h1>Manage Majors </h1> <button class="btn btn-add" data-toggle="modal" data-target="#addmajor"><i class="fas fa-plus-circle"></i> Add Majors</button> 
+				<h1>Manage Majors </h1> <button class="btn btn-add" data-toggle="modal" data-target="#addmajor"><i class="fas fa-plus-circle"></i> Add Majors</button>
 				{# <button class="btn btn-info" data-tooltip="tooltip" title="Multiple Majors adding by uploading CSV file"><i class="fas fa-arrow-circle-up"></i> Upload CSV</button> #}
 			</div>
 		</div>
 		{# Majors list #}
 		<div id="majors_list"></div>
-	
+
 	</div>
 	{{ colleges|json_script:"colleges" }}
-	
+
 	<!-- The Modal -->
 	<div class="modal" id="addmajor">
 		<div class="modal-dialog modal-lg">
@@ -74,8 +74,8 @@
 			</div>
 		</div>
 	</div>
-	
-{% endblock %} 
+
+{% endblock %}
 {% block scripts %}
 {{ block.super }}
 <script src="{% static 'js/BsMultiSelect.js' %}"></script>
@@ -113,7 +113,7 @@
 		modal.find('#major_description').val(major.description);
 		// console.log(major.colleges.split(","));
 		html = '<label>Select Colleges</label><select id="multi_select_colleges" class="selectmajors form-control" multiple data-placeholder="You can select multiple Colleges" style="display: none;">'
-		
+
 
 		colleges = JSON.parse(document.getElementById('colleges').textContent);
 		$.each(colleges, function(i,e){
@@ -135,14 +135,14 @@
 
 	function getPaginate(page_number){
 		params['page'] = page_number
-			
+
 		$.ajax({
 			type: "GET",
 			url: '/manage_majors/?' +  $.param(params),
 			success: function(data) {
 				$('#majors_list').html(data);
 			}
-		})	
+		})
 	};
 
 	function bulkDelete(){
@@ -185,9 +185,9 @@
 			title = "<h3>Are you sure you want to delete this major '" + major.title +"'?</h3>"
 		}
 		swal({
-			
+
 			title: title,
-			html: title, 
+			html: title,
 			text: "Delete Confirmation?",
 			type: "warning",
 			showCancelButton: true,
@@ -220,7 +220,7 @@
             },
     		messages: {
             	title: {
-           			required: "Title is Mandatory.",                  
+           			required: "Title is Mandatory.",
                 }
             },
             errorClass: "text-danger",
@@ -236,9 +236,9 @@
 
 			var title = $('#major_title').val();
 			var uid = $('#uid').val();
-			var selectedValueArray= []; 
-			$('#select_colleges :selected').each(function(i, selected){ 
-  				selectedValueArray[i] = $(selected).val(); 
+			var selectedValueArray= [];
+			$('#select_colleges :selected').each(function(i, selected){
+  				selectedValueArray[i] = $(selected).val();
 			});
 			var formData = new FormData(this);
 			formData.append('csrfmiddlewaretoken', '{{ csrf_token }}')
@@ -273,7 +273,7 @@
 				.prop("checked", "")
 				.end();
 
-		$('#select_colleges :selected').each(function(i, selected){ 
+		$('#select_colleges :selected').each(function(i, selected){
 			$(selected).removeProp('selected')
 			var span = s = $("span:contains("+ $(selected).text() +")")
 			span.next('button').click();
@@ -291,4 +291,4 @@
 
 	})
 </script>
-{% endblock %} 
+{% endblock %}

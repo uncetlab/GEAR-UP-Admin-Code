@@ -36,37 +36,37 @@
 					<div class="col-md-5">
 						<label>School Name</label>
 						<input id="school_name" placeholder="Required Field" name="name" type="text" required="true" class="form-control reqfld"/>
-					</div>					
+					</div>
 					<div class="col-md-5">
 						<label>LEA Name</label>
 						<input id="school_lea_name"  name="lea_name" type="text" class="form-control"/>
-					</div>					
+					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-5">
 						<label>Address line 1</label>
 						<input id="school_address_line1" name="address_line1" type="text" class="form-control"/>
-					</div>	
+					</div>
 					<div class="col-md-5">
 						<label>Address line 2</label>
 						<input id="school_address_line2" name="address_line2" type="text" class="form-control"/>
-					</div>					
+					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-5">
 						<label>City</label>
 						<input id="school_city" name="city" type="text" class="form-control"/>
-					</div>					
+					</div>
 					<div class="col-md-5">
 						<label>State</label>
 						<input id="school_state" name="state" type="text" class="form-control"/>
-					</div>					
+					</div>
 				</div>
 				<div class="row">
 					<div class="col-md-5">
 						<label>Zip Code</label>
 						<input id="school_zip_code" name="zip_code" type="text" class="form-control"/>
-					</div>					
+					</div>
 				</div>
 		  </div>
 
@@ -80,7 +80,7 @@
 		</div>
 	  </div>
 	</div>
-{% endblock %} 
+{% endblock %}
 {% block scripts %}
 {{ block.super }}
 
@@ -149,7 +149,7 @@
 			success: function(data) {
 				$('#school_list').html(data);
 			}
-		})	
+		})
 	};
 
 	function bulkDelete(){
@@ -255,4 +255,4 @@
 	$(this).find('#submit').text('Submit')
 	})
 </script>
-{% endblock %} 
+{% endblock %}

@@ -3,8 +3,7 @@ import logging
 import re
 
 from django.conf import settings
-from django.urls import resolve, Resolver404
-
+from django.urls import Resolver404, resolve
 from django.utils.termcolors import colorize
 
 DEFAULT_LOG_LEVEL = logging.DEBUG
@@ -12,18 +11,17 @@ DEFAULT_HTTP_4XX_LOG_LEVEL = logging.ERROR
 DEFAULT_COLORIZE = True
 DEFAULT_MAX_BODY_LENGTH = 50000  # log no more than 3k bytes of content
 SETTING_NAMES = {
-    'log_level': 'REQUEST_LOGGING_DATA_LOG_LEVEL',
-    'http_4xx_log_level': 'REQUEST_LOGGING_HTTP_4XX_LOG_LEVEL',
-    'legacy_colorize': 'REQUEST_LOGGING_DISABLE_COLORIZE',
-    'colorize': 'REQUEST_LOGGING_ENABLE_COLORIZE',
-    'max_body_length': 'REQUEST_LOGGING_MAX_BODY_LENGTH',
+    "log_level": "REQUEST_LOGGING_DATA_LOG_LEVEL",
+    "http_4xx_log_level": "REQUEST_LOGGING_HTTP_4XX_LOG_LEVEL",
+    "legacy_colorize": "REQUEST_LOGGING_DISABLE_COLORIZE",
+    "colorize": "REQUEST_LOGGING_ENABLE_COLORIZE",
+    "max_body_length": "REQUEST_LOGGING_MAX_BODY_LENGTH",
 }
-BINARY_REGEX = re.compile(
-    r'(.+Content-Type:.*?)(\S+)/(\S+)(?:\r\n)*(.+)', re.S | re.I)
-BINARY_TYPES = ('image', 'application')
-NO_LOGGING_ATTR = 'no_logging'
-NO_LOGGING_MSG = 'No logging for this endpoint'
-request_logger = logging.getLogger('watchtower-logger')
+BINARY_REGEX = re.compile(r"(.+Content-Type:.*?)(\S+)/(\S+)(?:\r\n)*(.+)", re.S | re.I)
+BINARY_TYPES = ("image", "application")
+NO_LOGGING_ATTR = "no_logging"
+NO_LOGGING_MSG = "No logging for this endpoint"
+request_logger = logging.getLogger("watchtower-logger")
 
 
 class Logger:
@@ -31,9 +29,9 @@ class Logger:
 
     def log(self, level, msg, logging_context):
         """log."""
-        args = logging_context['args']
-        kwargs = logging_context['kwargs']
-        for line in re.split(r'\r?\n', str(msg)):
+        args = logging_context["args"]
+        kwargs = logging_context["kwargs"]
+        for line in re.split(r"\r?\n", str(msg)):
             request_logger.log(level, line, *args, **kwargs)
 
     def log_error(self, level, msg, logging_context):
@@ -51,8 +49,7 @@ class ColourLogger(Logger):
 
     def log(self, level, msg, logging_context):
         """log."""
-        colour = self.log_error_colour \
-            if level >= logging.ERROR else self.log_colour
+        colour = self.log_error_colour if level >= logging.ERROR else self.log_colour
         self._log(level, msg, colour, logging_context)
 
     def log_error(self, level, msg, logging_context):
@@ -61,9 +58,9 @@ class ColourLogger(Logger):
         self._log(level, msg, self.log_error_colour, logging_context)
 
     def _log(self, level, msg, colour, logging_context):
-        args = logging_context['args']
-        kwargs = logging_context['kwargs']
-        for line in re.split(r'\r?\n', str(msg)):
+        args = logging_context["args"]
+        kwargs = logging_context["kwargs"]
+        for line in re.split(r"\r?\n", str(msg)):
             line = colorize(line, fg=colour)
             request_logger.log(level, line, *args, **kwargs)
 
@@ -76,43 +73,54 @@ class LoggingMiddleware(object):
         self.get_response = get_response
 
         self.log_level = getattr(
-            settings, SETTING_NAMES['log_level'], DEFAULT_LOG_LEVEL)
+            settings, SETTING_NAMES["log_level"], DEFAULT_LOG_LEVEL
+        )
         self.http_4xx_log_level = getattr(
-            settings, SETTING_NAMES['http_4xx_log_level'],
-            DEFAULT_HTTP_4XX_LOG_LEVEL)
+            settings, SETTING_NAMES["http_4xx_log_level"], DEFAULT_HTTP_4XX_LOG_LEVEL
+        )
 
-        for log_attr in ('log_level', 'http_4xx_log_level'):
+        for log_attr in ("log_level", "http_4xx_log_level"):
             level = getattr(self, log_attr)
-            if level not in [logging.NOTSET, logging.DEBUG, logging.INFO,
-                             logging.WARNING, logging.ERROR, logging.CRITICAL]:
-                raise ValueError("Unknown log level({}) in setting({})".format(
-                    level, SETTING_NAMES[log_attr]))
+            if level not in [
+                logging.NOTSET,
+                logging.DEBUG,
+                logging.INFO,
+                logging.WARNING,
+                logging.ERROR,
+                logging.CRITICAL,
+            ]:
+                raise ValueError(
+                    "Unknown log level({}) in setting({})".format(
+                        level, SETTING_NAMES[log_attr]
+                    )
+                )
 
         # TODO: remove deprecated legacy settings
-        enable_colorize = getattr(
-            settings, SETTING_NAMES['legacy_colorize'], None)
+        enable_colorize = getattr(settings, SETTING_NAMES["legacy_colorize"], None)
         if enable_colorize is None:
             enable_colorize = getattr(
-                settings, SETTING_NAMES['colorize'], DEFAULT_COLORIZE)
+                settings, SETTING_NAMES["colorize"], DEFAULT_COLORIZE
+            )
 
         if not isinstance(enable_colorize, bool):
             raise ValueError(
                 "{} should be boolean. {} is not boolean.".format(
-                    SETTING_NAMES['colorize'], enable_colorize)
+                    SETTING_NAMES["colorize"], enable_colorize
+                )
             )
 
         self.max_body_length = getattr(
-            settings, SETTING_NAMES['max_body_length'],
-            DEFAULT_MAX_BODY_LENGTH)
+            settings, SETTING_NAMES["max_body_length"], DEFAULT_MAX_BODY_LENGTH
+        )
         if not isinstance(self.max_body_length, int):
             raise ValueError(
                 "{} should be int. {} is not int.".format(
-                    SETTING_NAMES['max_body_length'], self.max_body_length)
+                    SETTING_NAMES["max_body_length"], self.max_body_length
+                )
             )
 
-        self.logger = ColourLogger("cyan", "magenta") \
-            if enable_colorize else Logger()
-        self.boundary = ''
+        self.logger = ColourLogger("cyan", "magenta") if enable_colorize else Logger()
+        self.boundary = ""
 
     def __call__(self, request):
         """call."""
@@ -134,7 +142,7 @@ class LoggingMiddleware(object):
         # Use this urlconf if present or default to None.
         # https://docs.djangoproject.com/en/2.1/topics/http/urls/#how-django-processes-a-request
         # https://docs.djangoproject.com/en/2.1/ref/request-response/#attributes-set-by-middleware
-        urlconf = getattr(request, 'urlconf', None)
+        urlconf = getattr(request, "urlconf", None)
 
         try:
             route_match = resolve(request.path, urlconf=urlconf)
@@ -145,15 +153,15 @@ class LoggingMiddleware(object):
         view = route_match.func
         func = view
         # This is for "django rest framework"
-        if hasattr(view, 'cls'):
-            if hasattr(view, 'actions'):
+        if hasattr(view, "cls"):
+            if hasattr(view, "actions"):
                 actions = view.actions
                 method_name = actions.get(method)
                 if method_name:
                     func = getattr(view.cls, view.actions[method], None)
             else:
                 func = getattr(view.cls, method, None)
-        elif hasattr(view, 'view_class'):
+        elif hasattr(view, "view_class"):
             # This is for django class-based views
             func = getattr(view.view_class, method, None)
         no_logging = getattr(func, NO_LOGGING_ATTR, None)
@@ -162,17 +170,16 @@ class LoggingMiddleware(object):
     def _skip_logging_request(self, request, reason):
         method_path = "{} {}".format(request.method, request.get_full_path())
         no_log_context = {
-            'args': (),
-            'kwargs': {
-                'extra': {
-                    'no_logging': reason
-                },
+            "args": (),
+            "kwargs": {
+                "extra": {"no_logging": reason},
             },
         }
         self.logger.log(
             logging.INFO,
             method_path + " (not logged because '" + reason + "')",
-            no_log_context)
+            no_log_context,
+        )
 
     def _log_request(self, request):
         method_path = "{} {}".format(request.method, request.get_full_path())
@@ -183,37 +190,37 @@ class LoggingMiddleware(object):
         self._log_request_body(request, logging_context)
 
     def _log_request_headers(self, request, logging_context):
-        headers = {k: v for k, v in request.META.items()
-                   if k.startswith('HTTP_')}
+        headers = {k: v for k, v in request.META.items() if k.startswith("HTTP_")}
 
         if headers:
             self.logger.log(self.log_level, headers, logging_context)
 
     def _log_request_body(self, request, logging_context):
         if request.body:
-            content_type = request.META.get('CONTENT_TYPE', '')
-            is_multipart = content_type.startswith('multipart/form-data')
+            content_type = request.META.get("CONTENT_TYPE", "")
+            is_multipart = content_type.startswith("multipart/form-data")
             if is_multipart:
-                self.boundary = '--' + content_type[30:]
+                self.boundary = "--" + content_type[30:]
                 # First 30 characters are "multipart/form-data; boundary="
             if is_multipart:
-                self._log_multipart(
-                    self._chunked_to_max(request.body), logging_context)
+                self._log_multipart(self._chunked_to_max(request.body), logging_context)
             else:
                 self.logger.log(
-                    self.log_level, self._chunked_to_max(request.body),
-                    logging_context)
+                    self.log_level, self._chunked_to_max(request.body), logging_context
+                )
 
     def process_response(self, request, response):
         """process_response."""
         resp_log = "{} {} - {}".format(
-            request.method, request.get_full_path(), response.status_code)
+            request.method, request.get_full_path(), response.status_code
+        )
         skip_logging_because = self._should_log_route(request)
         if skip_logging_because:
             self.logger.log_error(
-                logging.INFO, resp_log,
-                {'args': {},
-                 'kwargs': {'extra': {'no_logging': skip_logging_because}}})
+                logging.INFO,
+                resp_log,
+                {"args": {}, "kwargs": {"extra": {"no_logging": skip_logging_because}}},
+            )
             return response
         logging_context = self._get_logging_context(request, response)
 
@@ -223,8 +230,7 @@ class LoggingMiddleware(object):
                 self.logger.log_error(logging.INFO, resp_log, logging_context)
                 self._log_resp(logging.ERROR, response, logging_context)
             else:
-                self.logger.log(
-                    self.http_4xx_log_level, resp_log, logging_context)
+                self.logger.log(self.http_4xx_log_level, resp_log, logging_context)
                 self._log_resp(self.log_level, response, logging_context)
         elif response.status_code in range(500, 600):
             self.logger.log_error(logging.INFO, resp_log, logging_context)
@@ -246,11 +252,11 @@ class LoggingMiddleware(object):
         per process request/response call.
         """
         return {
-            'args': (),
-            'kwargs': {
-                'extra': {
-                    'request': request,
-                    'response': response,
+            "args": (),
+            "kwargs": {
+                "extra": {
+                    "request": request,
+                    "response": response,
                 },
             },
         }
@@ -272,18 +278,20 @@ class LoggingMiddleware(object):
         try:
             body_str = body.decode()
         except UnicodeDecodeError:
-            self.logger.log(
-                self.log_level, "(multipart/form)", logging_context)
+            self.logger.log(self.log_level, "(multipart/form)", logging_context)
             return
 
         parts = body_str.split(self.boundary)
         last = len(parts) - 1
         for i, part in enumerate(parts):
-            if 'Content-Type:' in part:
+            if "Content-Type:" in part:
                 match = BINARY_REGEX.search(part)
-                if match and match.group(2) in BINARY_TYPES \
-                        and not match.group(4) in ('', '\r\n'):
-                    part = match.expand(r'\1\2/\3\r\n\r\n(binary data)\r\n')
+                if (
+                    match
+                    and match.group(2) in BINARY_TYPES
+                    and not match.group(4) in ("", "\r\n")
+                ):
+                    part = match.expand(r"\1\2/\3\r\n\r\n(binary data)\r\n")
 
             if i != last:
                 part = part + self.boundary
@@ -291,8 +299,7 @@ class LoggingMiddleware(object):
             self.logger.log(self.log_level, part, logging_context)
 
     def _log_resp(self, level, response, logging_context):
-        if re.match(
-                '^application/json', response.get('Content-Type', ''), re.I):
+        if re.match("^application/json", response.get("Content-Type", ""), re.I):
             self.logger.log(level, response._headers, logging_context)
             if response.streaming:
                 # There's a chance that if it's streaming
@@ -301,10 +308,11 @@ class LoggingMiddleware(object):
                 # StreamingHttpResponse
                 # documentation advises to iterate only once on the content.
                 # So the idea here is to just _not_ log it.
-                self.logger.log(level, '(data_stream)', logging_context)
+                self.logger.log(level, "(data_stream)", logging_context)
             else:
-                self.logger.log(level, self._chunked_to_max(response.content),
-                                logging_context)
+                self.logger.log(
+                    level, self._chunked_to_max(response.content), logging_context
+                )
 
     def _chunked_to_max(self, msg):
-        return msg[0:self.max_body_length]
+        return msg[0 : self.max_body_length]

@@ -43,10 +43,10 @@ nav.advmenu button {
   border: 0;
   font-size: 0.9rem;
   font-weight: bold; cursor: pointer; background: none;
-  
+
 }
 nav.advmenu button.hidden {
-  transition: none; 
+  transition: none;
   width: 0;
   padding: 0;
   overflow: hidden;
@@ -54,7 +54,7 @@ nav.advmenu button.hidden {
 nav.advmenu button::after {
   content: attr(count);
  /* display: inline-flex; */ display: none;
-  width: 25px; 
+  width: 25px;
   height: 25px;
   align-items: center;
   justify-content: center;
@@ -130,5 +130,5 @@ ul.hidden-links li.nav-item a.nav-link:hover{color:rgba(000,000,000,1);}
 
 @media only screen and (max-width:767px) {
 .web-view  .videowd{width:100%;  height:300px;}
- 
+
 }

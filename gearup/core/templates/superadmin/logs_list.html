@@ -96,7 +96,7 @@
 		{% endif %}
 	</ul>
 		</div>
-	</div>			
+	</div>
 </div>
 </div>
 
@@ -145,9 +145,9 @@
 				success: function(data) {
 					$('#logs_list').html(data);
 				}
-			})	
+			})
 		});
-		
+
 		$("#manage_log_filter_type").change(function(){
 			var value = $("#manage_log_filter_type option:selected").val();
 			params['filter_type'] = value
@@ -157,7 +157,7 @@
 				success: function(data) {
 					$('#logs_list').html(data);
 				}
-			})	
+			})
 		});
 
 		$("#autoCompInput").bind("keypress", {}, keypressInBox);
@@ -168,7 +168,7 @@
 		});
 			function keypressInBox(e) {
     			var code = (e.keyCode ? e.keyCode : e.which);
-    			if (code == 13) { //Enter keycode                        
+    			if (code == 13) { //Enter keycode
         			e.preventDefault();
         			params['query'] = $("#autoCompInput").val()
         			$.ajax({
@@ -179,7 +179,7 @@
 						}
 					})
     			}
-    
+
 		};
 
 

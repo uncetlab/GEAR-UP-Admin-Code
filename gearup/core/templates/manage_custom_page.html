@@ -5,12 +5,12 @@
 	<div class="container content-wrap">
 		<div class="row pagetitle">
 			<div class="col-md-12">
-				<h1>Manage Pages</h1> <button class="btn btn-add" data-toggle="modal" data-target="#addpage"><i class="fas fa-plus-circle"></i> Add Page</button> 
+				<h1>Manage Pages</h1> <button class="btn btn-add" data-toggle="modal" data-target="#addpage"><i class="fas fa-plus-circle"></i> Add Page</button>
 			</div>
 		</div>
 		{# pages list #}
 		<div id="page_list"></div>
-		
+
 	</div>
 
 	<!-- The Modal -->
@@ -25,7 +25,7 @@
 
 				<form id="page-form"  enctype="multipart/form-data" action="" method="post">
 					{% csrf_token %}
-					
+
 					<!-- Modal body -->
 					<div class="modal-body">
 						<input type="hidden" id="uid" name="uid">
@@ -108,7 +108,7 @@
 									<li class="nav-item active"> <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a> </li>
 									<li class="nav-item"> <a class="nav-link" href="#">College</a> </li>
 									<li class="nav-item"> <a class="nav-link" href="#">Disability Access </a> </li>
-								</ul> 
+								</ul>
 								<button><i class="fas fa-ellipsis-h"></i></button>
 								<ul class="hidden-links hidden"></ul>
 							</nav>
@@ -147,13 +147,13 @@
 							<h1 class="college_name_preview">East Carolina University</h1>
 						</div>
 						<div class="preview-content-wrap">
-							<div class="preview-content">							
+							<div class="preview-content">
 								<div class="college_preview_video">
-									
+
 									<img src="{% static 'images/video-img.jpg' %}" alt=""/>
 									<div class="preview-video-playbtn"><a href="#"><img src="{% static 'images/ic_play_btn.png' %}" alt=""/></a></div>
 								</div>
-								
+
 								<div class="preview-html-wrap">
 									<div class="preview_content">
 									Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s
@@ -190,7 +190,7 @@
 	</div>
 </div>
 
-{% endblock %} 
+{% endblock %}
 {% block scripts %}
 {{ block.super }}
 <script src="{% static 'js/quill.js' %}"></script>
@@ -206,7 +206,7 @@
 
 	var preview_video_html ='<img src="{% static "images/default_video_img.png" %}" alt="" height="139" width="247" />'
 	var web_preview_video_html ='<img src="{% static "images/default_video_img.png" %}" alt="" height="500" width="100%" />'
-	
+
     var quill = new Quill('#editor', {
 		modules: {
 			imageResize: {
@@ -295,7 +295,7 @@
 		getPages();
 		$('#manage_page').DataTable();
 		$('[data-tooltip="tooltip"]').tooltip();
-	
+
 	});
 
 	function getPages(){
@@ -316,7 +316,7 @@
 			success: function(data) {
 				$('#page_list').html(data);
 			}
-		})	
+		})
 	};
 
 	function stateChange(contentUid){
@@ -358,7 +358,7 @@
 						<input type="text" style="display: none" value="custom_page" id="obj_type"/>\
 						<input type="text" style="display: none" value="'+pageUid+'" id="obj_id"/>'
 					if (page.video != null){
-						
+
 						video_html += '\
 							<div class="col-md-12"><br/>\
 								<div><label>Banner title</label></div>\
@@ -477,15 +477,15 @@
 	}
 
 	$(function(){
-		$(".web-view").hide(); 
+		$(".web-view").hide();
 		$("button.reveal").click(function(){
 			$(this).toggleClass("active").next().slideToggle("fast");
 			if ($.trim($(this).text()) === 'Web View') {
-				$(".mob-app-view").hide(); 
+				$(".mob-app-view").hide();
 				$(this).text('Mobile App view');
 			} else {
 				$(this).text('Web View');
-				$(".mob-app-view").show(); 
+				$(".mob-app-view").show();
 			}
 			return false;
 		});
@@ -498,7 +498,7 @@
             },
     		messages: {
             	title: {
-           			required: "Page Title is Mandatory.",                  
+           			required: "Page Title is Mandatory.",
                 }
             },
             errorClass: "text-danger",
@@ -516,7 +516,7 @@
 
 			var formData = new FormData(this);
 			formData.append('csrfmiddlewaretoken', '{{ csrf_token }}')
-			
+
 			var page_title = $('#page_title').val();
 			var uid = $('#uid').val();
 			if (uid){
@@ -545,7 +545,7 @@
 		$('#custom-page-preview').on('click', function(e){
 			var modal = $('#page-preview');
 			modal.find('.college_name_preview').html($('#page_title').val());
-			
+
 			modal.find('.college_preview_video').html(preview_video_html.replace('replace_video_title', $('#banner-title').val()));
 			modal.find('.college_web_preview_video').html(web_preview_video_html.replace('replace_video_title', $('#banner-title').val()));
 
@@ -584,6 +584,6 @@
     	form.find('.error').removeClass('text-danger');
     	form.find('.text-danger').removeClass('text-danger');
 	})
-	
+
 </script>
-{% endblock %} 
+{% endblock %}

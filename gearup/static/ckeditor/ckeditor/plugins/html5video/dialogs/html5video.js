@@ -6,7 +6,7 @@ CKEDITOR.dialog.add( 'html5video', function( editor ) {
         contents: [ {
             id: 'info',
             label: editor.lang.html5video.infoLabel,
-            elements: [ 
+            elements: [
             {
                 type: 'vbox',
                 padding: 0,
@@ -55,7 +55,7 @@ CKEDITOR.dialog.add( 'html5video', function( editor ) {
             {
                 type: 'vbox',
                 padding: 0,
-                
+
                 children: [{
                     type: 'hbox',
                     widths: [ '365px', '110px' ],
@@ -198,7 +198,7 @@ CKEDITOR.dialog.add( 'html5video', function( editor ) {
                         commit: function( widget ) {
                             widget.setData( 'autoplay', this.getValue() );
                         }
-                    }, 
+                    },
                     {
                         type: 'radio',
                         id: 'loop',
@@ -235,7 +235,7 @@ CKEDITOR.dialog.add( 'html5video', function( editor ) {
                             widget.setData( 'allowdownload', this.getValue() );
                         }
                     } ]
-                }, 
+                },
                 {
                     type: 'hbox',
                     children: [ {

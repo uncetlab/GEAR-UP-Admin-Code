@@ -88,14 +88,14 @@
 		{% endif %}
 	</ul>
 		</div>
-	</div>			
+	</div>
 </div>
 </div>
 
 
 <script type="text/javascript">
 	$(document).ready(function() {
-		
+
 		$("#bulk_delete").hide()
 		$("input[type='checkbox']").change(function() {
     		if($(":checkbox:checked").val()) {
@@ -117,7 +117,7 @@
 				success: function(data) {
 					$('#page_list').html(data);
 				}
-			})	
+			})
 		});
 
 		$("#autoCompInput").bind("keypress", {}, keypressInBox);
@@ -128,8 +128,8 @@
 		});
 			function keypressInBox(e) {
     			var code = (e.keyCode ? e.keyCode : e.which);
-    			if (code == 13) { //Enter keycode 
-    				params["query"] = $("#autoCompInput").val()                  
+    			if (code == 13) { //Enter keycode
+    				params["query"] = $("#autoCompInput").val()
         			e.preventDefault();
         			$.ajax({
 						type: "GET",
@@ -139,7 +139,7 @@
 						}
 					})
     			}
-    
+
 		};
 	});
 </script>

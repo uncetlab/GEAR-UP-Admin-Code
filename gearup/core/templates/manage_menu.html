@@ -6,14 +6,14 @@
 	<div class="container content-wrap">
 		<div class="row pagetitle">
 			<div class="col-md-12">
-				<h1>Manage Menu </h1> <button class="btn btn-add" data-toggle="modal" data-target="#addmenu"><i class="fas fa-plus-circle"></i> Add Menu Item</button> 
+				<h1>Manage Menu </h1> <button class="btn btn-add" data-toggle="modal" data-target="#addmenu"><i class="fas fa-plus-circle"></i> Add Menu Item</button>
 				<small class="ml-auto pt-2 text-info"><i>Drag to change menu order</i></small>
 			</div>
 		</div>
 		{# Menu list #}
 		<div id="menu_list"></div>
 	</div>
-	
+
 	<!-- The Modal -->
 	<div class="modal" id="addmenu">
 	  <div class="modal-dialog modal-lg">
@@ -34,15 +34,15 @@
 						<div class="col-md-5">
 							<label>Menu Title</label>
 							<input id="menu_title" placeholder="Required Field" name="title" type="text" class="form-control" />
-						</div>					
+						</div>
 					</div>
-					<div id="menu_icon_prev" class="row">				
+					<div id="menu_icon_prev" class="row">
 					</div>
 					<div class="row">
 						<div class="col-md-5">
 							<label>Menu Icon</label><span class="hint">Recommended icon width : 24px, height : 24px, color : #acadb8</span>
 							<input id="menu_icon" name="icon" type="file" class="form-control-file" />
-						</div>					
+						</div>
 					</div>
 					<div class="row">
 						<div class="col-md-5">
@@ -52,7 +52,7 @@
 								<option value="native">Custom Pages</option>
 								<option value="external">External</option>
 							</select>
-						</div>					
+						</div>
 					</div>
 					<div class="row">
 						<div class="col-md-12" class="row mb-0">
@@ -62,9 +62,9 @@
 								<option value="NC_COLLEGES">Visit Colleges</option>
 								<option value="CAREERS">Visit Careers</option>
 								<option value="HOME">Home</option>
-								<option value="DISABILITY_ACCESS">Disability Access</option>		
+								<option value="DISABILITY_ACCESS">Disability Access</option>
 							</select>
-						
+
 							<label for="menu_select_page">Select Custom Page</label>
 							<select id="menu_select_page" name="page"  class="form-control col-md-5">
 								<option value="">- Select -</option>
@@ -72,11 +72,11 @@
 									<option value="{{page.uid}}">{{page.title}}</option>
 								{% endfor %}
 							</select>
-						
+
 							<label for="menu_url">External Url</label><br>
 							<span id="menu_url_span" class="hint text-lightgray"><i class="fas fa-exclamation-triangle"></i> For better user experience mobile friendly websites are recommended</span>
 							<div class="col-md-5 m-0 pl-0"><input id="menu_url" name="url" type="text" class="form-control"/></div>
-						</div>					
+						</div>
 					</div>
 					<div class="row">
 						<div class="col-md-12">
@@ -96,8 +96,8 @@
 		</div>
 	  </div>
 	</div>
-	
-{% endblock %} 
+
+{% endblock %}
 {% block scripts %}
 {{ block.super }}
 <script>
@@ -140,7 +140,7 @@
 		var file, img;
 		var maxwidth = 24;
 		var maxheight = 24;
-		
+
 		if ((file = this.files[0])) {
 			img = new Image();
 			img.onload = function () {
@@ -152,7 +152,7 @@
 			};
 			img.src = _URL.createObjectURL(file);
 		}
-		
+
 	});
 
 	function editMenu(menu) {
@@ -274,16 +274,16 @@
             },
     		messages: {
             	title: {
-           			required: "Please enter menu title.",                  
+           			required: "Please enter menu title.",
                 },
                 icon: {
-           			required: "Please upload a valid menu icon.",                  
+           			required: "Please upload a valid menu icon.",
                 },
                 key_name: {
                 	required: "Please select a valid page from choices.",
                 },
                 page: {
-           			required: "Please select a valid page from choices.",                  
+           			required: "Please select a valid page from choices.",
                 },
                 url:{
                 	required: "Please provide a valid external url, with prefix 'http://'."
@@ -326,11 +326,11 @@
 				},
 
 			});
-				
-		
+
+
 		});
 
-		
+
 	});
 
 	$('#addmenu').on('hidden.bs.modal', function (e) {
@@ -362,4 +362,4 @@
 	})
 </script>
 
-{% endblock %} 
+{% endblock %}

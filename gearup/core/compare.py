@@ -8,29 +8,25 @@
      see AUTHORS for more details.
     :license: GNU GPL v3 or above, see LICENSE for more details.
 """
-import django
 import difflib
+import logging
 
+import django
+from django.conf import settings
+from django.contrib import admin
+from django.contrib.admin.sites import NotRegistered
+from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.template.loader import render_to_string
 from django.utils.encoding import force_str
-
-import logging
-
-from django.conf import settings
-from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ObjectDoesNotExist
+from django.utils.html import escape
+from django.utils.safestring import mark_safe
 # from django.utils.translation import ugettext as _
 from django.utils.translation import gettext_lazy as _
-
 from reversion import is_registered
 from reversion.models import Version
 from reversion.revisions import _get_options
-
-from django.contrib import admin
-from django.contrib.admin.sites import NotRegistered
-from django.utils.html import escape
-from django.utils.safestring import mark_safe
 
 logger = logging.getLogger(__name__)
 
@@ -134,7 +130,8 @@ def html_diff(value1, value2, cleanup=SEMANTIC):
         elif cleanup is not None:
             raise ValueError(
                 "cleanup parameter should be one of SEMANTIC,\
-                EFFICIENCY or None.")
+                EFFICIENCY or None."
+            )
         html = dmp.diff_prettyHtml(diff)
         html = html.replace("&para;<br>", "</br>")
     else:
@@ -142,8 +139,10 @@ def html_diff(value1, value2, cleanup=SEMANTIC):
         value1 = value1.splitlines()
         value2 = value2.splitlines()
 
-        if len(value1) > LINE_COUNT_4_UNIFIED_DIFF or \
-                len(value2) > LINE_COUNT_4_UNIFIED_DIFF:
+        if (
+            len(value1) > LINE_COUNT_4_UNIFIED_DIFF
+            or len(value2) > LINE_COUNT_4_UNIFIED_DIFF
+        ):
             diff = unified_diff(value1, value2, n=2)
         else:
             diff = difflib.ndiff(value1, value2)
@@ -223,6 +222,7 @@ def html_diff(value1, value2, cleanup=SEMANTIC):
 #         )
 #     )
 
+
 class FieldVersionDoesNotExist:
     """
     Sentinel object to handle missing fields
@@ -244,16 +244,18 @@ class CompareObject:
         self.follow = follow
         # try and get a value, if none punt
         self.compare_foreign_objects_as_id = getattr(
-            settings, "REVERSION_COMPARE_FOREIGN_OBJECTS_AS_ID", False)
+            settings, "REVERSION_COMPARE_FOREIGN_OBJECTS_AS_ID", False
+        )
         # ignore not registered models
         self.ignore_not_registered = getattr(
-            settings, "REVERSION_COMPARE_IGNORE_NOT_REGISTERED", False)
+            settings, "REVERSION_COMPARE_IGNORE_NOT_REGISTERED", False
+        )
         if self.compare_foreign_objects_as_id:
             self.value = version_record.field_dict.get(
-                getattr(field, "attname", field_name), DOES_NOT_EXIST)
+                getattr(field, "attname", field_name), DOES_NOT_EXIST
+            )
         else:
-            self.value = version_record.field_dict.get(
-                field_name, DOES_NOT_EXIST)
+            self.value = version_record.field_dict.get(field_name, DOES_NOT_EXIST)
 
     def _obj_repr(self, obj):
         # FIXME: How to create a better representation of the current value?
@@ -263,8 +265,7 @@ class CompareObject:
             return repr(obj)
 
     def _choices_repr(self, obj):
-        return force_str(
-            dict(self.field.flatchoices).get(obj, obj), strings_only=True)
+        return force_str(dict(self.field.flatchoices).get(obj, obj), strings_only=True)
 
     # def _to_string_ManyToManyField(self):
     #     return ", ".join(
@@ -280,7 +281,7 @@ class CompareObject:
             func = getattr(self, func_name)
             return func()
 
-        if hasattr(self.field, 'choices') and self.field.choices:
+        if hasattr(self.field, "choices") and self.field.choices:
             return self._choices_repr(self.value)
 
         if isinstance(self.value, str):
@@ -301,10 +302,8 @@ class CompareObject:
         # see - https://hynek.me/articles/hasattr/
         if not self.compare_foreign_objects_as_id:
             internal_type = getattr(self.field, "get_internal_type", None)
-            if internal_type is None or \
-                    internal_type() == "ForeignKey":  # FIXME!
-                if self.version_record.field_dict != \
-                        other.version_record.field_dict:
+            if internal_type is None or internal_type() == "ForeignKey":  # FIXME!
+                if self.version_record.field_dict != other.version_record.field_dict:
                     return False
 
         return True
@@ -331,16 +330,19 @@ class CompareObject:
         if self.field.related_name and hasattr(obj, self.field.related_name):
             if isinstance(self.field, models.fields.related.OneToOneRel):
                 try:
-                    ids = {force_str(getattr(obj, force_str(
-                        self.field.related_name)).pk)}
+                    ids = {
+                        force_str(getattr(obj, force_str(self.field.related_name)).pk)
+                    }
                 except ObjectDoesNotExist:
                     ids = set()
             else:
-                ids = {force_str(v.pk) for v in getattr(
-                    obj, force_str(self.field.related_name)).all()}
+                ids = {
+                    force_str(v.pk)
+                    for v in getattr(obj, force_str(self.field.related_name)).all()
+                }
                 if not ids and any(
-                    [f.name.endswith("_ptr")
-                     for f in obj._meta.get_fields()]):
+                    [f.name.endswith("_ptr") for f in obj._meta.get_fields()]
+                ):
                     others = self.version_record.revision.version_set.filter(
                         object_id=self.version_record.object_id
                     ).all()
@@ -349,11 +351,15 @@ class CompareObject:
                             p_obj = getattr(p, "_object_version").object
                         else:
                             p_obj = getattr(p, "object_version").object
-                        if not isinstance(p_obj, type(obj)) \
-                                and hasattr(
-                                p_obj, force_str(self.field.related_name)):
-                            ids = {force_str(v.pk) for v in getattr(p_obj,
-                                force_str(self.field.related_name)).all()}
+                        if not isinstance(p_obj, type(obj)) and hasattr(
+                            p_obj, force_str(self.field.related_name)
+                        ):
+                            ids = {
+                                force_str(v.pk)
+                                for v in getattr(
+                                    p_obj, force_str(self.field.related_name)
+                                ).all()
+                            }
         else:
             return {}, {}, []  # TODO: refactor that
 
@@ -389,7 +395,8 @@ class CompareObject:
         versions = {
             ver.object_id: ver
             for ver in old_revision.version_set.filter(
-                content_type=ContentType.objects.get_for_model(related_model), object_id__in=target_ids
+                content_type=ContentType.objects.get_for_model(related_model),
+                object_id__in=target_ids,
             ).all()
         }
 
@@ -407,7 +414,9 @@ class CompareObject:
             if potentially_missing_ids:
                 missing_objects_dict = {
                     force_str(rel.pk): rel
-                    for rel in related_model.objects.filter(pk__in=potentially_missing_ids).iterator()
+                    for rel in related_model.objects.filter(
+                        pk__in=potentially_missing_ids
+                    ).iterator()
                     if is_registered(rel.__class__) or not self.ignore_not_registered
                 }
 
@@ -421,7 +430,11 @@ class CompareObject:
 
             if is_registered(related_model) or not self.ignore_not_registered:
                 # shift query to database
-                deleted = list(Version.objects.filter(revision=old_revision).get_deleted(related_model))
+                deleted = list(
+                    Version.objects.filter(revision=old_revision).get_deleted(
+                        related_model
+                    )
+                )
             else:
                 deleted = []
 
@@ -446,7 +459,8 @@ class CompareObject:
         m2m_versions, missing_objects, missing_ids, deleted = self.get_many_to_many()
         if m2m_versions or missing_objects or missing_ids:
             result.append(
-                "many-to-many.......: %s" % ", ".join(f"{item} ({item.type})" for item in m2m_versions)
+                "many-to-many.......: %s"
+                % ", ".join(f"{item} ({item.type})" for item in m2m_versions)
             )
 
             if missing_objects:
@@ -496,10 +510,13 @@ class CompareObjects:
         self.M2M_CHANGE_INFO = None
 
     def changed(self):
-        """ return True if at least one field has changed values. """
+        """return True if at least one field has changed values."""
 
         info = None
-        if hasattr(self.field, "get_internal_type") and self.field.get_internal_type() == "ManyToManyField":
+        if (
+            hasattr(self.field, "get_internal_type")
+            and self.field.get_internal_type() == "ManyToManyField"
+        ):
             info = self.get_m2m_change_info()
         elif self.is_reversed:
             info = self.get_m2o_change_info()
@@ -526,10 +543,16 @@ class CompareObjects:
         return self.compare_obj1.get_related(), self.compare_obj2.get_related()
 
     def get_many_to_many(self):
-        return self.compare_obj1.get_many_to_many(), self.compare_obj2.get_many_to_many()
+        return (
+            self.compare_obj1.get_many_to_many(),
+            self.compare_obj2.get_many_to_many(),
+        )
 
     def get_reverse_foreign_key(self):
-        return self.compare_obj1.get_reverse_foreign_key(), self.compare_obj2.get_reverse_foreign_key()
+        return (
+            self.compare_obj1.get_reverse_foreign_key(),
+            self.compare_obj2.get_reverse_foreign_key(),
+        )
 
     def get_m2o_change_info(self):
         if self.M2O_CHANGE_INFO is not None:
@@ -552,7 +575,6 @@ class CompareObjects:
     # Abstract Many-to-Something (either -many or -one) as both
     # many2many and many2one relationships looks the same from the referred object.
     def get_m2s_change_info(self, obj1_data, obj2_data):
-
         result_dict1, missing_objects_dict1, deleted1 = obj1_data
         result_dict2, missing_objects_dict2, deleted2 = obj2_data
 
@@ -562,11 +584,19 @@ class CompareObjects:
         added_items = []
         same_items = []
 
-        same_missing_objects_dict = {k: v for k, v in missing_objects_dict1.items() if k in missing_objects_dict2}
-        removed_missing_objects_dict = {
-            k: v for k, v in missing_objects_dict1.items() if k not in missing_objects_dict2
+        same_missing_objects_dict = {
+            k: v for k, v in missing_objects_dict1.items() if k in missing_objects_dict2
         }
-        added_missing_objects_dict = {k: v for k, v in missing_objects_dict2.items() if k not in missing_objects_dict1}
+        removed_missing_objects_dict = {
+            k: v
+            for k, v in missing_objects_dict1.items()
+            if k not in missing_objects_dict2
+        }
+        added_missing_objects_dict = {
+            k: v
+            for k, v in missing_objects_dict2.items()
+            if k not in missing_objects_dict1
+        }
 
         # logger.debug("same_missing_objects: %s", same_missing_objects_dict)
         # logger.debug("removed_missing_objects: %s", removed_missing_objects_dict)
@@ -598,7 +628,9 @@ class CompareObjects:
                 # logger.debug("%s %s", repr(primary_key), repr(missing_objects_dict2))
                 if primary_key in added_missing_objects_dict:
                     added_missing_objects_dict.pop(primary_key)
-                    same_missing_objects_dict[primary_key] = missing_objects_dict2[primary_key]
+                    same_missing_objects_dict[primary_key] = missing_objects_dict2[
+                        primary_key
+                    ]
                     continue
                 removed_items.append(version1)
             elif version1 is None and version2 is not None:
@@ -613,9 +645,15 @@ class CompareObjects:
         added_items.sort(key=lambda item: force_str(item))
         same_items.sort(key=lambda item: force_str(item))
         deleted1.sort(key=lambda item: force_str(item))
-        same_missing_objects = sorted(same_missing_objects_dict.values(), key=lambda item: force_str(item))
-        removed_missing_objects = sorted(removed_missing_objects_dict.values(), key=lambda item: force_str(item))
-        added_missing_objects = sorted(added_missing_objects_dict.values(), key=lambda item: force_str(item))
+        same_missing_objects = sorted(
+            same_missing_objects_dict.values(), key=lambda item: force_str(item)
+        )
+        removed_missing_objects = sorted(
+            removed_missing_objects_dict.values(), key=lambda item: force_str(item)
+        )
+        added_missing_objects = sorted(
+            added_missing_objects_dict.values(), key=lambda item: force_str(item)
+        )
 
         return {
             "changed_items": changed_items,
@@ -636,7 +674,7 @@ class CompareMixin:
     compare_fields = None
 
     # list/tuple of field names to exclude from compare view.
-    compare_exclude = ['modified', 'invited_date','updated', 'created', 'university']
+    compare_exclude = ["modified", "invited_date", "updated", "created", "university"]
 
     # sort from new to old as default, see: https://github.com/etianen/django-reversion/issues/77
     history_latest_first = True
@@ -738,7 +776,9 @@ class CompareMixin:
                 continue
 
             is_reversed = field in self.reverse_fields
-            obj_compare = CompareObjects(field, field_name, obj, version1, version2, is_reversed)
+            obj_compare = CompareObjects(
+                field, field_name, obj, version1, version2, is_reversed
+            )
             # obj_compare.debug()
 
             is_related = obj_compare.is_related
@@ -751,7 +791,14 @@ class CompareMixin:
                 continue
 
             html = self._get_compare(obj_compare)
-            diff.append({"field": field, "is_related": is_related, "follow": follow, "diff": html})
+            diff.append(
+                {
+                    "field": field,
+                    "is_related": is_related,
+                    "follow": follow,
+                    "diff": html,
+                }
+            )
 
         return diff, has_unfollowed_fields
 

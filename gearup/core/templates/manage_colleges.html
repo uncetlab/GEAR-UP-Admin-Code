@@ -7,7 +7,7 @@
 	<div class="container content-wrap">
 		<div class="row pagetitle">
 			<div class="col-md-12">
-				<h1>Manage Colleges</h1> <a href="{% url 'college-create' %}" class="btn btn-add"><i class="fas fa-plus-circle"></i> Add College</a> 
+				<h1>Manage Colleges</h1> <a href="{% url 'college-create' %}" class="btn btn-add"><i class="fas fa-plus-circle"></i> Add College</a>
 			</div>
 		</div>
 		<div class="row">
@@ -32,7 +32,7 @@
 					<label>Search:<input type="search" id="autoCompInput" class="form-control form-control-sm" placeholder="" aria-controls="manage_school" {% if query != None %}value="{{ query|stringformat:'s' }}"{% endif %}></label>
 				</div>
 			</div>
-		</div>		 	
+		</div>
 		<div class="row">
 			<div class="col-md-12">
 				<div class="table-responsive">
@@ -59,7 +59,7 @@
 									<td><a href="#" onclick="deleteCollege({'uid': '{{college.uid}}','name': '{{college.name}}'})" class="text-danger"><i class="far fa-trash-alt"></i></a></td>
 								</tr>
 								{% endfor %}
-							
+
 						</tbody>
 					</table>
 				{% else %}
@@ -122,9 +122,9 @@
 		</div>
 	</div>
 </div>
-	
-{% endblock %} 
-	
+
+{% endblock %}
+
 {% block scripts %}
 {{ block.super }}
 
@@ -151,7 +151,7 @@
 				success: function(data) {
 					window.location.href = '/manage-colleges/?' + $.param(params);
 				}
-			})	
+			})
 		});
 
 		$("#autoCompInput").bind("keypress", {}, keypressInBox);
@@ -166,7 +166,7 @@
 			var value = $("#manage_college_select option:selected").val();
 			params['query'] = $("#autoCompInput").val();
 			var code = (e.keyCode ? e.keyCode : e.which);
-			if (code == 13) { //Enter keycode                        
+			if (code == 13) { //Enter keycode
     			e.preventDefault();
     			$.ajax({
 					type: "GET",
@@ -187,7 +187,7 @@
 			success: function(data) {
 				window.location.href = '/manage-colleges/?' + $.param(params);
 			}
-		})	
+		})
 	};
 
 	function bulkDelete(){
@@ -247,4 +247,4 @@
 		});
 	}
 </script>
-{% endblock %} 
+{% endblock %}

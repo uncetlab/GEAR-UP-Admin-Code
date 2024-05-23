@@ -28,7 +28,7 @@
 							<tr>
 								<th>Logo</th>
 								<th>Title</th>
-								<th>Status</th>							
+								<th>Status</th>
 								<th>Edit</th>
 								<th>Activate/Deactivate</th>
 							</tr>
@@ -38,7 +38,7 @@
 							<tr id="{{university.uid}}">
 								<td><img class="rounded-circle" height="40" width="40" src="{{university.logo_url}}" alt=""></td>
 								<td>{{university.name}}</td>
-								<td class="text-{% if university.active %}success{% else %}warning{% endif %}">{% if university.active %}Active{% else %}Inactive{% endif %}</td>						
+								<td class="text-{% if university.active %}success{% else %}warning{% endif %}">{% if university.active %}Active{% else %}Inactive{% endif %}</td>
 								<td><a href="#"  onClick="editUniversity({{university.to_json}})" class="text-success" data-tooltip="tooltip"><i class="far fa-edit"></i></a></td>
 								<td>
 									<a href="#" onclick="deleteUniversity({'uid': '{{university.uid}}','name': '{{university.name}}','active': '{{university.active}}'})" class="text-danger">
@@ -109,7 +109,7 @@
 					{% endif %}
 				</ul>
 			</div>
-		</div>			
+		</div>
 	</div>
 </div>
 
@@ -124,7 +124,7 @@
 				success: function(data) {
 					$('#university_list').html(data);
 				}
-			})	
+			})
 		});
 
 		$("#autoCompInput").bind("keypress", {}, keypressInBox);
@@ -135,7 +135,7 @@
 		});
 		function keypressInBox(e) {
 			var code = (e.keyCode ? e.keyCode : e.which);
-			if (code == 13) { //Enter keycode                        
+			if (code == 13) { //Enter keycode
     			e.preventDefault();
     			$.ajax({
 					type: "GET",
@@ -145,7 +145,7 @@
 					}
 				})
 			}
-    
+
 		};
 	});
 </script>

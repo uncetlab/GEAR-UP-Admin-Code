@@ -9,7 +9,7 @@
 				specialSet: "\\x20-\\x2F\\x3A-\\x40\\x5B-\\x60\\x7B-\\x7E\\x80-\\xFF", //All Other printable Ascii
 			}
 			var _defaults = {
-				minLength: 12,		  //Minimum Length of password 
+				minLength: 12,		  //Minimum Length of password
 				minUpperCase: 2,	  //Minimum number of Upper Case Letters characters in password
 				minLowerCase: 2,	  //Minimum number of Lower Case Letters characters in password
 				minDigits: 2,		  //Minimum number of digits characters in password
@@ -20,7 +20,7 @@
 				noLower: false,		  //Disallow Lower Case Letters
 				noDigit: false,		  //Disallow Digits
 				noSpecial: false,	  //Disallow Special Characters
-				//NOT IMPLEMENTED YET allowUnicode: false,  //Switches Ascii Special Set out for Unicode Special Set 
+				//NOT IMPLEMENTED YET allowUnicode: false,  //Switches Ascii Special Set out for Unicode Special Set
 				failRepeats: true,    //Disallow user to have x number of repeated alphanumeric characters ex.. ..A..a..A.. <- fails if maxRepeats <= 3 CASE INSENSITIVE
 				failConsecutive: true,//Disallow user to have x number of consecutive alphanumeric characters from any set ex.. abc <- fails if maxConsecutive <= 3
 				confirmField: undefined
@@ -43,7 +43,7 @@
 			if(_options.maxRepeats < 2) _options.maxRepeats = 2;
 
 			function charsetToString() {
-				return CHARSETS.upperCaseSet + CHARSETS.lowerCaseSet + CHARSETS.digitSet + CHARSETS.specialSet; 
+				return CHARSETS.upperCaseSet + CHARSETS.lowerCaseSet + CHARSETS.digitSet + CHARSETS.specialSet;
 			}
 
 			//GENERATE ALL REGEXs FOR EVERY CASE
@@ -72,7 +72,7 @@
 			//Field validation on every captured event
 			function validateField() {
 				var failedCases = [];
-		
+
 				//Evaluate all verbose cases
 				$.each(_cases, function(i, _case) {
 					if($(_element).val().search(new RegExp(_case.regex, "g")) == -1) {
@@ -85,7 +85,7 @@
 				if(_options.failConsecutive && $(_element).val().search(new RegExp("(?=(.)" + ("\\1").repeat(_options.maxConsecutive) + ")", "g")) != -1) {
 					failedCases.push("Password can't contain the same character more than " + _options.maxConsecutive + " times in a row.");
 				}
-				
+
 				//Determine if valid
 				var validPassword = (failedCases.length == 0) && ($(_element).val().length >= _options.minLength);
 				var fieldsMatch = true;
