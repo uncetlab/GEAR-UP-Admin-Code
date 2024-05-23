@@ -240,15 +240,20 @@ class ManageSchoolView(BaseView):
 
             try:
                 schools = paginator.page(page)
-            except PageNotAnInteger:
-                schools = paginator.page(1)
-            except EmptyPage:
+            except (PageNotAnInteger, EmptyPage):
+                if isinstance(e, PageNotAnInteger):
+                    schools = paginator.page(1)
+            else:
                 schools = paginator.page(paginator.num_pages)
-            html = render_to_string('schools_list.html',
-                                    {'schools': schools,
-                                     'range_list': RANGE_LIST,
-                                     'query': query})
-            return HttpResponse(html)
+            # except PageNotAnInteger:
+            #     schools = paginator.page(1)
+            # except EmptyPage:
+            #     schools = paginator.page(paginator.num_pages)
+            # html = render_to_string('schools_list.html',
+            #                         {'schools': schools,
+            #                          'range_list': RANGE_LIST,
+            #                          'query': query})
+            # return HttpResponse(html)
         return render(request, self.template_name,
                       {'schools': schools})
 
@@ -353,6 +358,9 @@ class ManageSchoolView(BaseView):
                     state=state,
                     university=self.university,
                     zip_code=zip_code)[0]
+                
+#lajdslkfjal
+
 
         return HttpResponse(json.dumps({
             'success': success, 'message': message}))
@@ -619,15 +627,27 @@ class ManageCustomView(BaseView):
 
             try:
                 pages = paginator.page(page)
-            except PageNotAnInteger:
-                pages = paginator.page(1)
-            except EmptyPage:
-                pages = paginator.page(paginator.num_pages)
+
+            except (PageNotAnInteger, EmptyPage) as e:
+                if isinstance(e, PageNotAnInteger):
+                    pages = paginator.page(1)
+                else:
+                    pages = paginator.page(paginator.num_pages)
+
             html = render_to_string('pages_list.html',
-                                    {'pages': pages,
-                                     'range_list': RANGE_LIST,
-                                     'query': query})
+                        {'pages': pages,
+                         'range_list': RANGE_LIST,
+                         'query': query})
             return HttpResponse(html)
+            # except PageNotAnInteger:
+            #     pages = paginator.page(1)
+            # except EmptyPage:
+            #     pages = paginator.page(paginator.num_pages)
+            # html = render_to_string('pages_list.html',
+            #                         {'pages': pages,
+            #                          'range_list': RANGE_LIST,
+            #                          'query': query})
+            # return HttpResponse(html)
         return render(request, self.template_name,
                       {'pages': pages})
 
@@ -718,15 +738,26 @@ class ManageMajorsView(BaseView):
 
             try:
                 majors = paginator.page(page)
-            except PageNotAnInteger:
-                majors = paginator.page(1)
-            except EmptyPage:
-                majors = paginator.page(paginator.num_pages)
+            except (PageNotAnInteger, EmptyPage) as e:
+                if isinstance(e, PageNotAnInteger):
+                    majors = paginator.page(1)
+                else:
+                    majors = paginator.page(paginator.num_pages)
+
             html = render_to_string('majors_list.html',
-                                    {'majors': majors,
-                                     'range_list': RANGE_LIST,
-                                     'query': query})
+                        {'majors': majors,
+                         'range_list': RANGE_LIST,
+                         'query': query})
             return HttpResponse(html)
+            # except PageNotAnInteger:
+            #     majors = paginator.page(1)
+            # except EmptyPage:
+            #     majors = paginator.page(paginator.num_pages)
+            # html = render_to_string('majors_list.html',
+            #                         {'majors': majors,
+            #                          'range_list': RANGE_LIST,
+            #                          'query': query})
+            # return HttpResponse(html)
         colleges = College.objects.filter(
             university=self.university).order_by('name')
         serializer = CollegeListSerializer(colleges, many=True)
@@ -793,15 +824,26 @@ class ManageCollegesView(BaseView):
 
         try:
             queryset = paginator.page(page)
-        except PageNotAnInteger:
-            queryset = paginator.page(1)
-        except EmptyPage:
+        except (PageNotAnInteger, EmptyPage) as e:
+            if isinstance(e, PageNotAnInteger):
+                queryset = paginator.page(1)
+        else:
             queryset = paginator.page(paginator.num_pages)
+
         return render(request, self.template_name,
-                      {'colleges': queryset,
-                       'range_list': RANGE_LIST,
-                       'query': query,
-                       'per_page': per_page})
+              {'colleges': queryset,
+               'range_list': RANGE_LIST,
+               'query': query,
+               'per_page': per_page})
+        # except PageNotAnInteger:
+        #     queryset = paginator.page(1)
+        # except EmptyPage:
+        #     queryset = paginator.page(paginator.num_pages)
+        # return render(request, self.template_name,
+        #               {'colleges': queryset,
+        #                'range_list': RANGE_LIST,
+        #                'query': query,
+        #                'per_page': per_page})
 
     def post(self, request, *args, **kwargs):
         data = request.POST.copy()
@@ -1065,9 +1107,10 @@ class ManageUniversityView(SuperAdminBaseView):
 
         try:
             queryset = paginator.page(page)
-        except PageNotAnInteger:
-            queryset = paginator.page(1)
-        except EmptyPage:
+        except (PageNotAnInteger, EmptyPage):
+            if isinstance(e, PageNotAnInteger):
+                queryset = paginator.page(1)
+        else:
             queryset = paginator.page(paginator.num_pages)
 
         if request.is_ajax():
@@ -1252,13 +1295,19 @@ class ManageAdminView(SuperAdminBaseView):
                 Q(user__email__icontains=query))
 
         paginator = Paginator(queryset, per_page)
-
         try:
             queryset = paginator.page(page)
-        except PageNotAnInteger:
-            queryset = paginator.page(1)
-        except EmptyPage:
-            queryset = paginator.page(paginator.num_pages)
+        except (PageNotAnInteger, EmptyPage):
+            if isinstance(e, PageNotAnInteger):
+                queryset = paginator.page(1)
+            else:
+                queryset = paginator.page(paginator.num_pages)
+        # try:
+        #     queryset = paginator.page(page)
+        # except PageNotAnInteger:
+        #     queryset = paginator.page(1)
+        # except EmptyPage:
+        #     queryset = paginator.page(paginator.num_pages)
 
         if request.is_ajax():
             html = render_to_string('superadmin/admin_list.html',
@@ -1416,13 +1465,19 @@ class ManageLogView(SuperAdminBaseView):
 
             return response
         paginator = Paginator(queryset, per_page)
-
         try:
             queryset = paginator.page(page)
-        except PageNotAnInteger:
-            queryset = paginator.page(1)
-        except EmptyPage:
-            queryset = paginator.page(paginator.num_pages)
+        except (PageNotAnInteger, EmptyPage):
+            if isinstance(e, PageNotAnInteger):
+                queryset = paginator.page(1)
+            else:
+                queryset = paginator.page(paginator.num_pages)
+        # try:
+        #     queryset = paginator.page(page)
+        # except PageNotAnInteger:
+        #     queryset = paginator.page(1)
+        # except EmptyPage:
+        #     queryset = paginator.page(paginator.num_pages)
         if request.is_ajax():
             html = render_to_string('superadmin/logs_list.html',
                                     {'logs': queryset,
@@ -1453,18 +1508,30 @@ class ManageCareersView(BaseView):
             queryset = queryset.filter(career__icontains=query)
 
         paginator = Paginator(queryset, per_page)
-
         try:
             queryset = paginator.page(page)
-        except PageNotAnInteger:
-            queryset = paginator.page(1)
-        except EmptyPage:
-            queryset = paginator.page(paginator.num_pages)
+        except (PageNotAnInteger, EmptyPage) as e:
+            if isinstance(e, PageNotAnInteger):
+                queryset = paginator.page(1)
+            else:
+                queryset = paginator.page(paginator.num_pages)
+
         return render(request, self.template_name,
-                      {'careers': queryset,
-                       'range_list': RANGE_LIST,
-                       'query': query,
-                       'per_page': per_page})
+              {'careers': queryset,
+               'range_list': RANGE_LIST,
+               'query': query,
+               'per_page': per_page})
+        # try:
+        #     queryset = paginator.page(page)
+        # except PageNotAnInteger:
+        #     queryset = paginator.page(1)
+        # except EmptyPage:
+        #     queryset = paginator.page(paginator.num_pages)
+        # return render(request, self.template_name,
+        #               {'careers': queryset,
+        #                'range_list': RANGE_LIST,
+        #                'query': query,
+        #                'per_page': per_page})
 
     def post(self, request, *args, **kwargs):
         data = request.POST.copy()

@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "ms-vsliveshare.vsliveshare",
+    "christian-kohler.path-intellisense",
+    "esbenp.prettier-vscode",
+    "rangav.vscode-thunder-client",
+  ]
+}

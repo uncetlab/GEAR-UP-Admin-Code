@@ -1,10 +1,10 @@
 from rest_framework.decorators import renderer_classes, api_view
-from rest_framework_swagger.renderers import OpenAPIRenderer, SwaggerUIRenderer
+# from rest_framework_swagger.renderers import OpenAPIRenderer, SwaggerUIRenderer
 import coreapi
 from rest_framework import response
 # noinspection PyArgumentList
 @api_view()
-@renderer_classes([SwaggerUIRenderer, OpenAPIRenderer])
+@renderer_classes([])
 def schema_view(request):
     print("---inside schema view-----")
     # noinspection PyArgumentList

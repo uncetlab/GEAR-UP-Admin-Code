@@ -18,17 +18,17 @@ from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
 
-from rest_framework_swagger.views import get_swagger_view
+# from rest_framework_swagger.views import get_swagger_view
 from rest_framework.documentation import include_docs_urls
 # from rest_framework.schemas import get_schema_view
 
-schema_view = get_swagger_view(title='GearUP API')
+# schema_view = get_swagger_view(title='GearUP API')
 
 urlpatterns = [
     path('mconsole/', admin.site.urls),
     path('', include('core.urls')),
     path('api/', include('api.urls')),
-    path('docs/', schema_view),
+    # path('docs/', schema_view),
     path('api_docs/', include_docs_urls(title='GearUP API')),
 
 ]

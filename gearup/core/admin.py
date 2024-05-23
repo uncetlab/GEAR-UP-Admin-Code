@@ -1,7 +1,8 @@
 """Default admin module."""
 
 from django.contrib import admin
-from django.contrib.gis.admin import OSMGeoAdmin
+# from django.contrib.gis.admin import OSMGeoAdmin
+from django.contrib.gis.admin.options import GISModelAdmin
 # from django import forms
 from core.models import CustomPage, Device,\
     Menu, School, UserType, College, Tile,\
@@ -40,7 +41,7 @@ class MenuAdmin(admin.ModelAdmin):
     list_filter = ('university', )
 
 
-class SchoolAdmin(OSMGeoAdmin):
+class SchoolAdmin(GISModelAdmin):
     """School Admin."""
 
     list_filter = ('university', )
@@ -53,7 +54,7 @@ class CustomPageAdmin(admin.ModelAdmin):
     list_filter = ('university', )
 
 
-class CollegeAdmin(OSMGeoAdmin):
+class CollegeAdmin(GISModelAdmin):
     """College Admin."""
 
     list_filter = ('university', )

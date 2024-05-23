@@ -13,14 +13,15 @@ import difflib
 
 from django.db import models
 from django.template.loader import render_to_string
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 
 import logging
 
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
-from django.utils.translation import ugettext as _
+# from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 
 from reversion import is_registered
 from reversion.models import Version
@@ -121,8 +122,8 @@ def html_diff(value1, value2, cleanup=SEMANTIC):
     EFFICIENCY or None to clean up the diff
     for greater human readibility.
     """
-    value1 = force_text(value1)
-    value2 = force_text(value2)
+    value1 = force_str(value1)
+    value2 = force_str(value2)
     if dmp is not None:
         # Generate the diff with google-diff-match-patch
         diff = dmp.diff_main(value1, value2)
@@ -228,7 +229,7 @@ class FieldVersionDoesNotExist:
     """
 
     def __str__(self):
-        return force_text(_("Field didn't exist!"))
+        return force_str(_("Field didn't exist!"))
 
 
 DOES_NOT_EXIST = FieldVersionDoesNotExist()
@@ -257,12 +258,12 @@ class CompareObject:
     def _obj_repr(self, obj):
         # FIXME: How to create a better representation of the current value?
         try:
-            return force_text(obj)
+            return force_str(obj)
         except Exception:
             return repr(obj)
 
     def _choices_repr(self, obj):
-        return force_text(
+        return force_str(
             dict(self.field.flatchoices).get(obj, obj), strings_only=True)
 
     # def _to_string_ManyToManyField(self):
@@ -330,13 +331,13 @@ class CompareObject:
         if self.field.related_name and hasattr(obj, self.field.related_name):
             if isinstance(self.field, models.fields.related.OneToOneRel):
                 try:
-                    ids = {force_text(getattr(obj, force_text(
+                    ids = {force_str(getattr(obj, force_str(
                         self.field.related_name)).pk)}
                 except ObjectDoesNotExist:
                     ids = set()
             else:
-                ids = {force_text(v.pk) for v in getattr(
-                    obj, force_text(self.field.related_name)).all()}
+                ids = {force_str(v.pk) for v in getattr(
+                    obj, force_str(self.field.related_name)).all()}
                 if not ids and any(
                     [f.name.endswith("_ptr")
                      for f in obj._meta.get_fields()]):
@@ -350,9 +351,9 @@ class CompareObject:
                             p_obj = getattr(p, "object_version").object
                         if not isinstance(p_obj, type(obj)) \
                                 and hasattr(
-                                p_obj, force_text(self.field.related_name)):
-                            ids = {force_text(v.pk) for v in getattr(p_obj,
-                                force_text(self.field.related_name)).all()}
+                                p_obj, force_str(self.field.related_name)):
+                            ids = {force_str(v.pk) for v in getattr(p_obj,
+                                force_str(self.field.related_name)).all()}
         else:
             return {}, {}, []  # TODO: refactor that
 
@@ -370,7 +371,7 @@ class CompareObject:
             return {}, {}, []  # TODO: refactor that
 
         try:
-            ids = frozenset(map(force_text, self.value))
+            ids = frozenset(map(force_str, self.value))
         except TypeError:
             # catch errors e.g. produced by taggit's TaggableManager
             logger.exception("Can't collect m2m ids")
@@ -405,7 +406,7 @@ class CompareObject:
             # )
             if potentially_missing_ids:
                 missing_objects_dict = {
-                    force_text(rel.pk): rel
+                    force_str(rel.pk): rel
                     for rel in related_model.objects.filter(pk__in=potentially_missing_ids).iterator()
                     if is_registered(rel.__class__) or not self.ignore_not_registered
                 }
@@ -608,13 +609,13 @@ class CompareObjects:
                 raise RuntimeError()
 
         # In Place Sorting of Lists (exclude changed since its a tuple)
-        removed_items.sort(key=lambda item: force_text(item))
-        added_items.sort(key=lambda item: force_text(item))
-        same_items.sort(key=lambda item: force_text(item))
-        deleted1.sort(key=lambda item: force_text(item))
-        same_missing_objects = sorted(same_missing_objects_dict.values(), key=lambda item: force_text(item))
-        removed_missing_objects = sorted(removed_missing_objects_dict.values(), key=lambda item: force_text(item))
-        added_missing_objects = sorted(added_missing_objects_dict.values(), key=lambda item: force_text(item))
+        removed_items.sort(key=lambda item: force_str(item))
+        added_items.sort(key=lambda item: force_str(item))
+        same_items.sort(key=lambda item: force_str(item))
+        deleted1.sort(key=lambda item: force_str(item))
+        same_missing_objects = sorted(same_missing_objects_dict.values(), key=lambda item: force_str(item))
+        removed_missing_objects = sorted(removed_missing_objects_dict.values(), key=lambda item: force_str(item))
+        added_missing_objects = sorted(added_missing_objects_dict.values(), key=lambda item: force_str(item))
 
         return {
             "changed_items": changed_items,
