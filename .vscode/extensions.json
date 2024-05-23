@@ -4,5 +4,6 @@
     "christian-kohler.path-intellisense",
     "esbenp.prettier-vscode",
     "rangav.vscode-thunder-client",
+    // "ms-python.pylint",
   ]
 }

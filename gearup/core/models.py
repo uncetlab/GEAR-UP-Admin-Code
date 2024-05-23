@@ -528,6 +528,9 @@ class College(models.Model):
         }
 
     def dark_mode_content(self, base_url=""):
+        """
+        Create html content for mobile in dark mode.
+        """
         tile_html = ""
 
         for tile in self.tiles.filter(active=True):
@@ -560,6 +563,9 @@ class College(models.Model):
         return template.render(context)
 
     def light_mode_content(self, base_url=""):
+        """
+        Create html content for mobile in light mode.
+        """
         tile_html = ""
 
         for tile in self.tiles.filter(active=True):
@@ -614,7 +620,9 @@ class File(models.Model):
     university = models.ForeignKey(UniversityProfile, on_delete=models.CASCADE)
 
     def __str__(self):
-        """Model name representation."""
+        """
+        Model name representation.
+        """
         return self.name or ""
 
     @property
@@ -844,6 +852,9 @@ class Career(models.Model):
         return template.render(context)
 
     def light_mode_content(self, base_url=""):
+        """
+        Create html content for mobile in light mode.
+        """
         tile_html = ""
 
         for tile in self.tiles.filter(active=True):

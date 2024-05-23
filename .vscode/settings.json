@@ -1,8 +1,13 @@
 {
 "editor.formatOnSave": true,
-    "[python]": {
+"python.defaultInterpreterPath": "/Users/egmarie/Desktop/DEV/GEAR-UP-Admin-Code/gearup/venv/bin/python3.11", 
+"python.linting.pylintArgs": [
+    "--disable=C0114,C0115,C0116",
+    "--enable=F,unreachable,duplicate-key"
+],
+"[python]": { 
         "editor.defaultFormatter": "esbenp.prettier-vscode",
-
+  
     },
     "[django-html]": {
         "editor.quickSuggestions": {
@@ -23,4 +28,17 @@
     "[bash]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
+    "[json]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[css]":{
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[yaml]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+
 }
