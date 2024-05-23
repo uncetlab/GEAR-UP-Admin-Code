@@ -13,12 +13,12 @@ import logging
 
 import django
 from django.conf import settings
-from django.contrib import admin
-from django.contrib.admin.sites import NotRegistered
+#from django.contrib import admin
+#from django.contrib.admin.sites import NotRegistered
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
-from django.template.loader import render_to_string
+#from django.template.loader import render_to_string
 from django.utils.encoding import force_str
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
@@ -236,6 +236,9 @@ DOES_NOT_EXIST = FieldVersionDoesNotExist()
 
 
 class CompareObject:
+    """
+    A class for comparing objects and their fields.
+        """
     def __init__(self, field, field_name, obj, version_record, follow):
         self.field = field
         self.field_name = field_name
@@ -261,7 +264,8 @@ class CompareObject:
         # FIXME: How to create a better representation of the current value?
         try:
             return force_str(obj)
-        except Exception:
+        except Exception(obj):
+            # details = f"Error: {obj, Exception.args}"
             return repr(obj)
 
     def _choices_repr(self, obj):
@@ -275,6 +279,11 @@ class CompareObject:
     #     return self._obj_repr(self.get_related())
 
     def to_string(self):
+        """_summary_
+
+        Returns:
+            _type_: _description_
+        """
         internal_type = self.field.get_internal_type()
         func_name = f"_to_string_{internal_type}"
         if hasattr(self, func_name):
@@ -312,12 +321,22 @@ class CompareObject:
         return not self.__eq__(other)
 
     def get_object_version(self):
+        """_summary_
+
+        Returns:
+            _type_: _description_
+        """
         if hasattr(self.version_record, "_object_version"):
             return getattr(self.version_record, "_object_version")
         else:
             return getattr(self.version_record, "object_version")
 
     def get_related(self):
+        """_summary_
+
+        Returns:
+            _type_: _description_
+        """
         if getattr(self.field, "related_model", None):
             obj = self.get_object_version().object
             try:
@@ -326,6 +345,11 @@ class CompareObject:
                 return None
 
     def get_reverse_foreign_key(self):
+        """_summary_
+
+        Returns:
+            _type_: _description_
+        """
         obj = self.get_object_version().object
         if self.field.related_name and hasattr(obj, self.field.related_name):
             if isinstance(self.field, models.fields.related.OneToOneRel):
@@ -387,6 +411,20 @@ class CompareObject:
         return self.get_many_to_something(ids, self.field.related_model)
 
     def get_many_to_something(self, target_ids, related_model, is_reverse=False):
+        """
+        Retrieves related objects and missing objects based on the given target IDs and related model.
+
+        Args:
+            target_ids (set): A set of target IDs.
+            related_model (Model): The related model.
+            is_reverse (bool, optional): Indicates whether the relationship is reverse. Defaults to False.
+
+        Returns:
+            tuple: A tuple containing the following:
+                - versions (dict): A dictionary of related objects, where the keys are the object IDs and the values are the object versions.
+                - missing_objects_dict (dict): A dictionary of missing related objects, where the keys are the object IDs and the values are the objects.
+                - deleted (list): A list of deleted related objects.
+        """
         # get instance of reversion.models.Revision():
         # A group of related object versions.
         old_revision = self.version_record.revision
@@ -441,6 +479,11 @@ class CompareObject:
         return versions, missing_objects_dict, deleted
 
     def get_debug(self):  # pragma: no cover
+        """_summary_
+
+        Returns:
+            _type_: _description_
+        """
         if not settings.DEBUG:
             return
 
@@ -485,6 +528,130 @@ class CompareObject:
 
 
 class CompareObjects:
+    """A class for comparing objects and their fields.
+
+    Args:
+        field: The field to compare.
+        field_name: The name of the field.
+        obj: The object to compare.
+        version1: The first version to compare.
+        version2: The second version to compare.
+        is_reversed: Indicates if the comparison is reversed.
+
+    Attributes:
+        field: The field being compared.
+        field_name: The name of the field being compared.
+        obj: The object being compared.
+        is_related: Indicates if the field is a related field (ForeignKey, ManyToManyField, etc.).
+        is_reversed: Indicates if the comparison is reversed.
+        follow: Indicates if the field should be followed.
+        compare_obj1: The first CompareObject instance.
+        compare_obj2: The second CompareObject instance.
+        value1: The value of the first CompareObject.
+        value2: The value of the second CompareObject.
+        M2O_CHANGE_INFO: The change information for ManyToOne relationships.
+        M2M_CHANGE_INFO: The change information for ManyToMany relationships.
+    """
+
+    def __init__(self, field, field_name, obj, version1, version2, is_reversed):
+        self.field = field
+        self.field_name = field_name
+        self.obj = obj
+
+        # is a related field (ForeignKey, ManyToManyField etc.)
+        self.is_related = getattr(self.field, "related_model", None) is not None
+        self.is_reversed = is_reversed
+        if not self.is_related:
+            self.follow = None
+        elif self.field_name in _get_options(self.obj.__class__).follow:
+            self.follow = True
+        else:
+            self.follow = False
+
+        self.compare_obj1 = CompareObject(field, field_name, obj, version1, self.follow)
+        self.compare_obj2 = CompareObject(field, field_name, obj, version2, self.follow)
+
+        self.value1 = self.compare_obj1.value
+        self.value2 = self.compare_obj2.value
+
+        self.M2O_CHANGE_INFO = None
+        self.M2M_CHANGE_INFO = None
+
+    def changed(self):
+        """Return True if at least one field has changed values."""
+        # ...
+        pass
+
+    def to_string(self):
+        """Return the string representation of the CompareObjects.
+
+        Returns:
+            tuple: A tuple containing the string representation of the first and second CompareObject.
+        """
+        # ...
+        pass
+
+    def get_related(self):
+        """Get the related objects.
+
+        Returns:
+            tuple: A tuple containing the related objects of the first and second CompareObject.
+        """
+        # ...
+        pass
+
+    def get_many_to_many(self):
+        """Get the ManyToMany relationships.
+
+        Returns:
+            tuple: A tuple containing the ManyToMany relationships of the first and second CompareObject.
+        """
+        # ...
+        pass
+
+    def get_reverse_foreign_key(self):
+        """Get the reverse foreign key relationships.
+
+        Returns:
+            tuple: A tuple containing the reverse foreign key relationships of the first and second CompareObject.
+        """
+        # ...
+        pass
+
+    def get_m2o_change_info(self):
+        """Get the change information for ManyToOne relationships.
+
+        Returns:
+            dict: A dictionary containing the change information.
+        """
+        # ...
+        pass
+
+    def get_m2m_change_info(self):
+        """Get the change information for ManyToMany relationships.
+
+        Returns:
+            dict: A dictionary containing the change information.
+        """
+        # ...
+        pass
+
+    def get_m2s_change_info(self, obj1_data, obj2_data):
+        """Get the change information for Many-to-Something relationships.
+
+        Args:
+            obj1_data: The data for the first object.
+            obj2_data: The data for the second object.
+
+        Returns:
+            dict: A dictionary containing the change information.
+        """
+        # ...
+        pass
+class CompareObjects:
+    """_summary_
+    
+    """
     def __init__(self, field, field_name, obj, version1, version2, is_reversed):
         self.field = field
         self.field_name = field_name
@@ -537,24 +704,49 @@ class CompareObjects:
         return self.compare_obj1 != self.compare_obj2
 
     def to_string(self):
+        """_summary_
+
+        Returns:
+            _type_: _description_
+        """
         return self.compare_obj1.to_string(), self.compare_obj2.to_string()
 
     def get_related(self):
+        """_summary_
+
+        Returns:
+            _type_: _description_
+        """
         return self.compare_obj1.get_related(), self.compare_obj2.get_related()
 
     def get_many_to_many(self):
+        """_summary_
+
+        Returns:
+            _type_: _description_
+        """
         return (
             self.compare_obj1.get_many_to_many(),
             self.compare_obj2.get_many_to_many(),
         )
 
     def get_reverse_foreign_key(self):
+        """_summary_
+
+        Returns:
+            _type_: _description_
+        """
         return (
             self.compare_obj1.get_reverse_foreign_key(),
             self.compare_obj2.get_reverse_foreign_key(),
         )
 
     def get_m2o_change_info(self):
+        """_summary_
+
+        Returns:
+            _type_: _description_
+        """
         if self.M2O_CHANGE_INFO is not None:
             return self.M2O_CHANGE_INFO
 
@@ -564,6 +756,11 @@ class CompareObjects:
         return self.M2O_CHANGE_INFO
 
     def get_m2m_change_info(self):
+        """_summary_
+
+        Returns:
+            _type_: _description_
+        """
         if self.M2M_CHANGE_INFO is not None:
             return self.M2M_CHANGE_INFO
 
@@ -575,6 +772,11 @@ class CompareObjects:
     # Abstract Many-to-Something (either -many or -one) as both
     # many2many and many2one relationships looks the same from the referred object.
     def get_m2s_change_info(self, obj1_data, obj2_data):
+        """ _summary_
+        
+        Returns:
+            _type_: _description_
+        """
         result_dict1, missing_objects_dict1, deleted1 = obj1_data
         result_dict2, missing_objects_dict2, deleted2 = obj2_data
 

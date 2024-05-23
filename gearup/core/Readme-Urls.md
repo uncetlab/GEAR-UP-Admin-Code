@@ -3,6 +3,7 @@
 This `README.md` file provides documentation for the `urls.py` file, which is located in the `core` folder of your Django project. The `urls.py` file is a crucial part of your Django project as it defines the URL patterns and routes for your web application.
 
 ## Table of Contents
+
 - [Introduction](#introduction)
 - [URL Patterns](#url-patterns)
   - [Home Page](#home-page)

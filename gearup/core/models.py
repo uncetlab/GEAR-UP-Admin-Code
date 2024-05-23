@@ -36,7 +36,7 @@ class UniversityProfile(models.Model):
 
     def __str__(self):
         """Model name representation."""
-        return self.name or ""
+        return str(self.name) or ""
 
     @property
     def to_json(self):
@@ -131,7 +131,7 @@ class UserType(models.Model):
 
     def __str__(self):
         """Model name representation."""
-        return self.title or ""
+        return str(self.title) or ""
 
 
 # @reversion.register()
@@ -187,7 +187,7 @@ class Menu(models.Model):
 
     def __str__(self):
         """Model name representation."""
-        return self.title or ""
+        return str(self.title) or ""
 
     @property
     def to_json(self):
@@ -222,7 +222,7 @@ class School(models.Model):
 
     def __str__(self):
         """Model name representation."""
-        return self.name or ""
+        return str(self.name) or ""
 
     @property
     def address_formatted(self):
@@ -265,7 +265,7 @@ class Tile(models.Model):
 
     def __str__(self):
         """Model name representation."""
-        return self.title or ""
+        return str(self.title) or ""
 
     class Meta:
         """Object meta definitions."""
@@ -311,7 +311,7 @@ class CustomPage(models.Model):
 
     def __str__(self):
         """Model name representation."""
-        return self.title or ""
+        return str(self.title) or ""
 
     @property
     def active_tiles(self):
@@ -330,6 +330,9 @@ class CustomPage(models.Model):
 
     @property
     def related_tiles(self):
+        """
+            Check if page has related tiles.
+        """
         return (
             True
             if Tile.objects.filter(
@@ -363,6 +366,9 @@ class CustomPage(models.Model):
 
     @property
     def dark_mode_content(self):
+        """
+        Create html content for mobile in dark mode.
+        """
         context = {"content": self.content}
         template_name = "themes/%s/dark_mode.html" % slugify(self.university.name)
 
@@ -374,6 +380,10 @@ class CustomPage(models.Model):
 
     @property
     def light_mode_content(self):
+        """
+        Returns:
+            _type_: _description_
+        """
         context = {"content": self.content}
         template_name = "themes/%s/light_mode.html" % slugify(self.university.name)
         default_template = template_name.replace(
@@ -396,7 +406,7 @@ class Major(models.Model):
 
     def __str__(self):
         """Model name representation."""
-        return self.title or ""
+        return str(self.title) or ""
 
     @property
     def college_names(self):
@@ -465,7 +475,7 @@ class College(models.Model):
 
     def __str__(self):
         """Model name representation."""
-        return self.name or ""
+        return str(self.name) or ""
 
     @property
     def logo_url(self):
@@ -623,7 +633,7 @@ class File(models.Model):
         """
         Model name representation.
         """
-        return self.name or ""
+        return str(self.name) or ""
 
     @property
     def secure_s3_url(self):
@@ -757,7 +767,7 @@ class Career(models.Model):
 
     def __str__(self):
         """Model name representation."""
-        return self.career or "-"
+        return str(self.career) or "-"
 
     @property
     def logo_url(self):
@@ -820,6 +830,9 @@ class Career(models.Model):
         }
 
     def dark_mode_content(self, base_url=""):
+        """
+        Create html content for mobile in dark mode.
+        """
         tile_html = ""
 
         for tile in self.tiles.filter(active=True):

@@ -1,10 +1,6 @@
 {
 "editor.formatOnSave": true,
 "python.defaultInterpreterPath": "/Users/egmarie/Desktop/DEV/GEAR-UP-Admin-Code/gearup/venv/bin/python3.11", 
-"python.linting.pylintArgs": [
-    "--disable=C0114,C0115,C0116",
-    "--enable=F,unreachable,duplicate-key"
-],
 "[python]": { 
         "editor.defaultFormatter": "esbenp.prettier-vscode",
   
