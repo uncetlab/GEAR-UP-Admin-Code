@@ -1,12 +1,11 @@
-FROM ubuntu:22.04
-# Uses Python 3.10
+FROM ubuntu:20.04
+# Uses Python 3.8
 
 ARG DEBIAN_FRONTEND=noninteractive
 ENV PYTHONUNBUFFERED=1
 RUN apt update -y\
-    && apt install software-properties-common -y
-# \
-# && add-apt-repository -y ppa:ubuntugis/ppa
+    && apt install software-properties-common -y\
+    && add-apt-repository -y ppa:ubuntugis/ppa
 
 RUN apt update \
     && apt install gdal-bin python3-gdal libgdal-dev python3-dev -y
@@ -30,7 +29,6 @@ WORKDIR /home/App
 COPY requirements.txt /home/App/requirements.txt
 
 RUN python3 -m pip install psycopg2-binary
-# python3 psycopg2-binary
 # RUN python3 -m pip install Pillow
 # RUN python3 -m pip install wheel
 RUN python3 -m pip install setuptools
